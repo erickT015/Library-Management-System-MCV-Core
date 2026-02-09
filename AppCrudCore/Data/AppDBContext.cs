@@ -16,7 +16,8 @@ namespace AppCrudCore.Data
         public DbSet<Cliente> Cliente { get; set; }
         public DbSet<Libro> Libro { get; set; }
         public DbSet<Categoria> Categoria { get; set; }
-
+        public DbSet<TransaccionBiblioteca> TransaccionesBiblioteca { get; set; }
+        public DbSet<TransaccionDetalle> TransaccionesDetalle { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -115,6 +116,8 @@ namespace AppCrudCore.Data
                 tb.HasOne(col => col.Rol)
                 .WithMany()
                 .HasForeignKey(col => col.RolId);
+
+                tb.HasIndex(col => col.Correo).IsUnique();
             });
 
             //==PROPIEDADES DE LA TABLA LIBRO
@@ -131,16 +134,21 @@ namespace AppCrudCore.Data
                 tb.HasOne(col => col.Categoria)
                 .WithMany()
                 .HasForeignKey(col => col.CategoriaId);
+
+                tb.Property(col => col.PrecioVenta).HasPrecision(10, 2);
             });
 
             modelBuilder.Entity<Libro>().ToTable(tb =>
             {
                 tb.HasCheckConstraint(
-                    "CK_Libro_Stock","StockDisponible <= StockTotal"
-                    );
+                    "CK_Libro_Stock_Total",
+                    "StockPrestamo + StockVenta <= StockTotal"
+                );
+
                 tb.HasCheckConstraint(
-                    "CK_Libro_Stock_NoNegativo","StockTotal >= 0 AND StockDisponible >= 0"
-                    );
+                    "CK_Libro_Stock_NoNegativo",
+                    "StockTotal >= 0 AND StockPrestamo >= 0 AND StockVenta >= 0"
+                );
             });
 
             //==PROPIEDADES DE LA TABLA CATEGORIA
@@ -174,6 +182,50 @@ namespace AppCrudCore.Data
                     new Categoria { IdCategoria = 7, Nombre = "Educación", Activo = true },
                     new Categoria { IdCategoria = 8, Nombre = "Infantil", Activo = true }
                 );
+
+            });
+
+
+            //==PROPIEDADES DE TABLA TRANSACCION BIBLIOTECA
+            modelBuilder.Entity<TransaccionBiblioteca>(tb =>
+            {
+                tb.HasKey(col => col.IdTransaccionBiblioteca); //es primary
+                tb.Property(col => col.IdTransaccionBiblioteca)
+                .UseIdentityColumn() //incremental (1,1)
+                .ValueGeneratedOnAdd(); //no envies valor, la db lo gesyiona
+
+                tb.Property(col => col.Total).HasColumnType("decimal(18,2)");
+
+                tb.HasOne(col => col.Cliente)//FK
+               .WithMany()
+               .HasForeignKey(col => col.ClienteId);
+
+
+                tb.HasOne(col => col.Empleado)//FK
+                .WithMany()
+                .HasForeignKey(col => col.EmpleadoId);
+
+            });
+
+            //==PROPIEDADES DE LA TABLA TRANSACCION DETALLE
+            modelBuilder.Entity<TransaccionDetalle>(tb =>
+            {
+                tb.HasKey(col => col.IdTransaccionDetalle);
+                tb.Property(col => col.IdTransaccionDetalle)
+                .UseIdentityColumn() 
+                .ValueGeneratedOnAdd();
+
+                tb.Property(col => col.PrecioUnitario).HasColumnType("decimal(18,2)");
+
+                tb.Property(col => col.Subtotal).HasColumnType("decimal(18,2)");
+
+                tb.HasOne(col => col.Libro) //fk
+                .WithMany()
+                .HasForeignKey(col => col.LibroId);
+
+                tb.HasOne(col => col.TransaccionBiblioteca) //fk
+              .WithMany()
+              .HasForeignKey(col => col.TransaccionBibliotecaId);
 
             });
         }

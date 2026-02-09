@@ -28,10 +28,16 @@
                 @Html.DisplayNameFor(model => model.Resumen)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.PrecioVenta)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.StockTotal)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StockDisponible)
+                @Html.DisplayNameFor(model => model.StockPrestamo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StockVenta)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Activo)
@@ -61,10 +67,16 @@
                 @Html.DisplayFor(modelItem => item.Resumen)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.PrecioVenta)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.StockTotal)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.StockDisponible)
+                @Html.DisplayFor(modelItem => item.StockPrestamo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StockVenta)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Activo)

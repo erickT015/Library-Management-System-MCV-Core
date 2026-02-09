@@ -57,7 +57,7 @@ namespace AppCrudCore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdLibro,Titulo,Autor,ISBN,AnioPublicacion,Resumen,StockTotal,StockDisponible,Activo,CategoriaId")] Libro libro)
+        public async Task<IActionResult> Create([Bind("IdLibro,Titulo,Autor,ISBN,AnioPublicacion,Resumen,PrecioVenta,StockTotal,StockPrestamo,StockVenta,Activo,CategoriaId")] Libro libro)
         {
             if (ModelState.IsValid)
             {
@@ -91,7 +91,7 @@ namespace AppCrudCore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdLibro,Titulo,Autor,ISBN,AnioPublicacion,Resumen,StockTotal,StockDisponible,Activo,CategoriaId")] Libro libro)
+        public async Task<IActionResult> Edit(int id, [Bind("IdLibro,Titulo,Autor,ISBN,AnioPublicacion,Resumen,PrecioVenta,StockTotal,StockPrestamo,StockVenta,Activo,CategoriaId")] Libro libro)
         {
             if (id != libro.IdLibro)
             {

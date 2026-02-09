@@ -2,7 +2,7 @@
 
 namespace AppCrudCore.Models
 {
-    public class Libro
+    public class Libro : IValidatableObject
     {
 
         public int IdLibro { get; set; }
@@ -15,24 +15,38 @@ namespace AppCrudCore.Models
         [StringLength(150, ErrorMessage = "El autor no puede superar los 150 caracteres")]
         public string Autor { get; set; }
 
+
         [Required(ErrorMessage = "El ISBN es obligatorio")]
         public string ISBN {  get; set; }
+
 
         [Required(ErrorMessage = "El año de publicación es obligatorio")]
         public int AnioPublicacion { get; set; }
 
+
         [Required(ErrorMessage = "El resumen es obligatorio")]
         [StringLength(500, ErrorMessage = "El resumen no puede superar los 500 caracteres")]
         public string Resumen {  get; set; }
+
+
+        [Required(ErrorMessage = "El precio de venta es obligatorio")]
+        [Range(0, (double)decimal.MaxValue, ErrorMessage = "El precio no puede ser negativo")]
+        [DataType(DataType.Currency)] // Indica el tipo de dato
+        [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)] // Formato de moneda con 2 decimales
+        public decimal PrecioVenta { get; set; }
+
 
         [Required(ErrorMessage = "La cantidad total es obligatoria")]
         [Range(0,int.MaxValue)] //minimo 0, no negativos]
         public int StockTotal { get; set; }
 
 
-        //[Required(ErrorMessage = "La cantidad disponible es obligatorio")]
-        [Range(0,int.MaxValue)]
-        public int StockDisponible { get; set; }
+        [Range(0, int.MaxValue)]
+        public int StockPrestamo { get; set; }
+
+
+        [Range(0, int.MaxValue)]
+        public int StockVenta { get; set; }
 
 
         [Required]
@@ -42,5 +56,26 @@ namespace AppCrudCore.Models
         [Required(ErrorMessage = "La categoría es obligatoria")]
         public int CategoriaId { get; set; } //FK
         public Categoria? Categoria { get; set; }   // navegación (lectura)
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (StockPrestamo + StockVenta > StockTotal)
+            {
+                yield return new ValidationResult(
+                    "StockPrestamo + StockVenta no puede ser mayor que StockTotal.",
+                    new[] { nameof(StockPrestamo), nameof(StockVenta), nameof(StockTotal) }
+                );
+            }
+
+            if (AnioPublicacion > DateTime.Now.Year)
+            {
+                yield return new ValidationResult(
+                    $"El año no puede ser mayor que {DateTime.Now.Year}.",
+                    new[] { nameof(AnioPublicacion) }
+                );
+            }
+        }
+
+
     }
 }

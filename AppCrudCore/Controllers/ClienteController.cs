@@ -57,7 +57,7 @@ namespace AppCrudCore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdCliente,Cedula,NombreCompleto,Correo,Telefono,Direccion,FechaRegistro,Activo,RolId")] Cliente cliente)
+        public async Task<IActionResult> Create([Bind("IdCliente,Cedula,NombreCompleto,Correo,Telefono,Direccion,FechaRegistro,PasswordHash,PasswordTemp,Activo,RolId")] Cliente cliente)
         {
             if (ModelState.IsValid)
             {
@@ -91,7 +91,7 @@ namespace AppCrudCore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCliente,Cedula,NombreCompleto,Correo,Telefono,Direccion,FechaRegistro,Activo,RolId")] Cliente cliente)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCliente,Cedula,NombreCompleto,Correo,Telefono,Direccion,FechaRegistro,PasswordHash,PasswordTemp,Activo,RolId")] Cliente cliente)
         {
             if (id != cliente.IdCliente)
             {

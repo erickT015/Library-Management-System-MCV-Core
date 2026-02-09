@@ -4,6 +4,7 @@ using AppCrudCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppCrudCore.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260209044656_UpdateLibroAndClienteStructure")]
+    partial class UpdateLibroAndClienteStructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,8 +127,8 @@ namespace AppCrudCore.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<DateTime>("FechaRegistro")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("FechaRegistro")
+                        .HasColumnType("date");
 
                     b.Property<string>("NombreCompleto")
                         .IsRequired()
@@ -327,84 +330,6 @@ namespace AppCrudCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("AppCrudCore.Models.TransaccionBiblioteca", b =>
-                {
-                    b.Property<int>("IdTransaccionBiblioteca")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTransaccionBiblioteca"));
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpleadoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Estado")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("FechaCompletada")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Origen")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TipoServicio")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("IdTransaccionBiblioteca");
-
-                    b.HasIndex("ClienteId");
-
-                    b.HasIndex("EmpleadoId");
-
-                    b.ToTable("TransaccionesBiblioteca");
-                });
-
-            modelBuilder.Entity("AppCrudCore.Models.TransaccionDetalle", b =>
-                {
-                    b.Property<int>("IdTransaccionDetalle")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTransaccionDetalle"));
-
-                    b.Property<int>("Cantidad")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LibroId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("PrecioUnitario")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Subtotal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TransaccionBibliotecaId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TransaccionBibliotecaIdTransaccionBiblioteca")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdTransaccionDetalle");
-
-                    b.HasIndex("LibroId");
-
-                    b.HasIndex("TransaccionBibliotecaId");
-
-                    b.HasIndex("TransaccionBibliotecaIdTransaccionBiblioteca");
-
-                    b.ToTable("TransaccionesDetalle");
-                });
-
             modelBuilder.Entity("AppCrudCore.Models.Cliente", b =>
                 {
                     b.HasOne("AppCrudCore.Models.Rol", "Rol")
@@ -434,51 +359,6 @@ namespace AppCrudCore.Migrations
                         .IsRequired();
 
                     b.Navigation("Categoria");
-                });
-
-            modelBuilder.Entity("AppCrudCore.Models.TransaccionBiblioteca", b =>
-                {
-                    b.HasOne("AppCrudCore.Models.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AppCrudCore.Models.Empleado", "Empleado")
-                        .WithMany()
-                        .HasForeignKey("EmpleadoId");
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Empleado");
-                });
-
-            modelBuilder.Entity("AppCrudCore.Models.TransaccionDetalle", b =>
-                {
-                    b.HasOne("AppCrudCore.Models.Libro", "Libro")
-                        .WithMany()
-                        .HasForeignKey("LibroId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AppCrudCore.Models.TransaccionBiblioteca", "TransaccionBiblioteca")
-                        .WithMany()
-                        .HasForeignKey("TransaccionBibliotecaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AppCrudCore.Models.TransaccionBiblioteca", null)
-                        .WithMany("Detalles")
-                        .HasForeignKey("TransaccionBibliotecaIdTransaccionBiblioteca");
-
-                    b.Navigation("Libro");
-
-                    b.Navigation("TransaccionBiblioteca");
-                });
-
-            modelBuilder.Entity("AppCrudCore.Models.TransaccionBiblioteca", b =>
-                {
-                    b.Navigation("Detalles");
                 });
 #pragma warning restore 612, 618
         }

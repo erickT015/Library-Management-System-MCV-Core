@@ -31,6 +31,12 @@
                 @Html.DisplayNameFor(model => model.FechaRegistro)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.PasswordHash)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PasswordTemp)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Activo)
             </th>
             <th>
@@ -59,6 +65,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FechaRegistro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PasswordHash)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PasswordTemp)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Activo)

@@ -41,16 +41,28 @@
             @Html.DisplayFor(model => model.Resumen)
         </dd>
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PrecioVenta)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PrecioVenta)
+        </dd>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.StockTotal)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.StockTotal)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StockDisponible)
+            @Html.DisplayNameFor(model => model.StockPrestamo)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StockDisponible)
+            @Html.DisplayFor(model => model.StockPrestamo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.StockVenta)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.StockVenta)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Activo)

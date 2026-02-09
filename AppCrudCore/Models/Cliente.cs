@@ -31,7 +31,14 @@ namespace AppCrudCore.Models
 
 
         [Required(ErrorMessage = "La fecha de registro es obligatorio")]
-        public DateOnly FechaRegistro {  get; set; }
+        public DateTime FechaRegistro {  get; set; } = DateTime.Now;
+
+
+        [Required]
+        public String PasswordHash { get; set; }
+
+
+        public bool PasswordTemp { get; set; }
 
 
         [Required]
