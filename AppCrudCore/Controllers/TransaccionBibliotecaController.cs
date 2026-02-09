@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AppCrudCore.Data;
+using AppCrudCore.Models;
+using AppCrudCore.Models.Enums;
+using AppCrudCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AppCrudCore.Data;
-using AppCrudCore.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AppCrudCore.Controllers
 {
@@ -22,7 +24,11 @@ namespace AppCrudCore.Controllers
         // GET: TransaccionBiblioteca
         public async Task<IActionResult> Index()
         {
-            var appDBContext = _context.TransaccionesBiblioteca.Include(t => t.Cliente).Include(t => t.Empleado);
+            var appDBContext = _context.TransaccionBiblioteca
+                .Include(t => t.Cliente)
+                .Include(t => t.Empleado)
+                .Include(t => t.Detalles)
+                .ThenInclude(d => d.Libro);
             return View(await appDBContext.ToListAsync());
         }
 
@@ -34,7 +40,7 @@ namespace AppCrudCore.Controllers
                 return NotFound();
             }
 
-            var transaccionBiblioteca = await _context.TransaccionesBiblioteca
+            var transaccionBiblioteca = await _context.TransaccionBiblioteca
                 .Include(t => t.Cliente)
                 .Include(t => t.Empleado)
                 .FirstOrDefaultAsync(m => m.IdTransaccionBiblioteca == id);
@@ -46,125 +52,141 @@ namespace AppCrudCore.Controllers
             return View(transaccionBiblioteca);
         }
 
-        // GET: TransaccionBiblioteca/Create
+
+        // GET: Funcion de busqueda por debounce
+        [HttpGet]
+        public async Task<IActionResult> BuscarLibros(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return Json(new List<object>());
+
+            var libros = await _context.Libro
+                .Where(libro => libro.Activo &&
+                       (libro.Titulo.Contains(term) || libro.ISBN.Contains(term)))
+                .OrderBy(libro => libro.Titulo)
+                .Take(20)
+                .Select(l => new
+                {
+                    id = l.IdLibro,
+                    titulo = l.Titulo,
+                    isbn = l.ISBN,
+                    precio = l.PrecioVenta,
+                    stockVenta = l.StockVenta,
+                    stockPrestamo = l.StockPrestamo,
+                    stockTotal = l.StockTotal,
+                    text = $"{l.Titulo} | ISBN: {l.ISBN} | Venta: {l.StockVenta} | Préstamo: {l.StockPrestamo}"
+                })
+                .ToListAsync();
+
+            return Json(libros);
+        }
+
+
+        //GET
         public IActionResult Create()
         {
-            ViewData["ClienteId"] = new SelectList(_context.Cliente, "IdCliente", "Cedula");
-            ViewData["EmpleadoId"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula");
+            ViewBag.Cliente = new SelectList(
+                _context.Cliente.Where(c => c.Activo),
+                "IdCliente",
+                "NombreCompleto"
+            );
+
+            ViewBag.Empleados = new SelectList(
+                _context.Empleados.Where(e => e.Activo),
+                "IdEmpleado",
+                "NombreCompleto"
+            );
+
             return View();
         }
 
-        // POST: TransaccionBiblioteca/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        //POST:
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdTransaccionBiblioteca,ClienteId,EmpleadoId,TipoServicio,Origen,Estado,Total,FechaCreacion,FechaCompletada")] TransaccionBiblioteca transaccionBiblioteca)
+        public async Task<IActionResult> Create(TransaccionBibliotecaCreateViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(transaccionBiblioteca);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ClienteId"] = new SelectList(_context.Cliente, "IdCliente", "Cedula", transaccionBiblioteca.ClienteId);
-            ViewData["EmpleadoId"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", transaccionBiblioteca.EmpleadoId);
-            return View(transaccionBiblioteca);
-        }
+            if (!ModelState.IsValid)
+                return View(model);
 
-        // GET: TransaccionBiblioteca/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            using var dbTransaction = await _context.Database.BeginTransactionAsync();
 
-            var transaccionBiblioteca = await _context.TransaccionesBiblioteca.FindAsync(id);
-            if (transaccionBiblioteca == null)
+            try
             {
-                return NotFound();
-            }
-            ViewData["ClienteId"] = new SelectList(_context.Cliente, "IdCliente", "Cedula", transaccionBiblioteca.ClienteId);
-            ViewData["EmpleadoId"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", transaccionBiblioteca.EmpleadoId);
-            return View(transaccionBiblioteca);
-        }
-
-        // POST: TransaccionBiblioteca/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdTransaccionBiblioteca,ClienteId,EmpleadoId,TipoServicio,Origen,Estado,Total,FechaCreacion,FechaCompletada")] TransaccionBiblioteca transaccionBiblioteca)
-        {
-            if (id != transaccionBiblioteca.IdTransaccionBiblioteca)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                var transaccion = new TransaccionBiblioteca
                 {
-                    _context.Update(transaccionBiblioteca);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+                    ClienteId = model.ClienteId,
+                    EmpleadoId = model.EmpleadoId,
+                    TipoServicio = model.TipoServicio,
+                    Origen = model.Origen,
+                    Estado = EstadoTransaccion.Completada,
+                    FechaCreacion = DateTime.Now
+                };
+
+                decimal total = 0;
+
+                foreach (var item in model.Detalles)
                 {
-                    if (!TransaccionBibliotecaExists(transaccionBiblioteca.IdTransaccionBiblioteca))
+                    var libro = await _context.Libro.FindAsync(item.LibroId);
+
+                    if (libro == null)
+                        throw new Exception("Libro no encontrado");
+
+                    if (model.TipoServicio == TipoServicio.Venta)
                     {
-                        return NotFound();
+                        if (libro.StockVenta < item.Cantidad)
+                            throw new Exception($"Stock de venta insuficiente para {libro.Titulo}");
+
+                        libro.StockVenta -= item.Cantidad;
                     }
                     else
                     {
-                        throw;
+                        if (libro.StockPrestamo < item.Cantidad)
+                            throw new Exception($"Stock de préstamo insuficiente para {libro.Titulo}");
+
+                        libro.StockPrestamo -= item.Cantidad;
                     }
+
+                    libro.StockTotal -= item.Cantidad;
+
+                    var subtotal = libro.PrecioVenta * item.Cantidad;
+
+                    var detalle = new TransaccionDetalle
+                    {
+                        LibroId = libro.IdLibro,
+                        Cantidad = item.Cantidad,
+                        PrecioUnitario = libro.PrecioVenta,
+                        Subtotal = subtotal
+                    };
+
+                    total += subtotal;
+
+                    transaccion.Detalles.Add(detalle);
                 }
+
+                transaccion.Total = total;
+
+                 _context.TransaccionBiblioteca.Add(transaccion);
+
+                await _context.SaveChangesAsync();
+
+                await dbTransaction.CommitAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClienteId"] = new SelectList(_context.Cliente, "IdCliente", "Cedula", transaccionBiblioteca.ClienteId);
-            ViewData["EmpleadoId"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", transaccionBiblioteca.EmpleadoId);
-            return View(transaccionBiblioteca);
-        }
-
-        // GET: TransaccionBiblioteca/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                await dbTransaction.RollbackAsync();
+                var error = ex.InnerException?.Message ?? ex.Message;
+                ModelState.AddModelError("", error);
+
+                return View(model);
             }
-
-            var transaccionBiblioteca = await _context.TransaccionesBiblioteca
-                .Include(t => t.Cliente)
-                .Include(t => t.Empleado)
-                .FirstOrDefaultAsync(m => m.IdTransaccionBiblioteca == id);
-            if (transaccionBiblioteca == null)
-            {
-                return NotFound();
-            }
-
-            return View(transaccionBiblioteca);
-        }
-
-        // POST: TransaccionBiblioteca/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var transaccionBiblioteca = await _context.TransaccionesBiblioteca.FindAsync(id);
-            if (transaccionBiblioteca != null)
-            {
-                _context.TransaccionesBiblioteca.Remove(transaccionBiblioteca);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool TransaccionBibliotecaExists(int id)
         {
-            return _context.TransaccionesBiblioteca.Any(e => e.IdTransaccionBiblioteca == id);
+            return _context.TransaccionBiblioteca.Any(e => e.IdTransaccionBiblioteca == id);
         }
     }
 }

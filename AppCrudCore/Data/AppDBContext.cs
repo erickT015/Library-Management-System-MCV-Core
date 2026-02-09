@@ -16,8 +16,8 @@ namespace AppCrudCore.Data
         public DbSet<Cliente> Cliente { get; set; }
         public DbSet<Libro> Libro { get; set; }
         public DbSet<Categoria> Categoria { get; set; }
-        public DbSet<TransaccionBiblioteca> TransaccionesBiblioteca { get; set; }
-        public DbSet<TransaccionDetalle> TransaccionesDetalle { get; set; }
+        public DbSet<TransaccionBiblioteca> TransaccionBiblioteca { get; set; }
+        public DbSet<TransaccionDetalle> TransaccionDetalle { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -198,12 +198,14 @@ namespace AppCrudCore.Data
 
                 tb.HasOne(col => col.Cliente)//FK
                .WithMany()
-               .HasForeignKey(col => col.ClienteId);
+               .HasForeignKey(col => col.ClienteId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
                 tb.HasOne(col => col.Empleado)//FK
                 .WithMany()
-                .HasForeignKey(col => col.EmpleadoId);
+                .HasForeignKey(col => col.EmpleadoId)
+                 .OnDelete(DeleteBehavior.Restrict);
 
             });
 
@@ -221,11 +223,14 @@ namespace AppCrudCore.Data
 
                 tb.HasOne(col => col.Libro) //fk
                 .WithMany()
-                .HasForeignKey(col => col.LibroId);
+                .HasForeignKey(col => col.LibroId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
 
                 tb.HasOne(col => col.TransaccionBiblioteca) //fk
-              .WithMany()
-              .HasForeignKey(col => col.TransaccionBibliotecaId);
+              .WithMany( t => t.Detalles)
+              .HasForeignKey(col => col.TransaccionBibliotecaId)
+               .OnDelete(DeleteBehavior.Restrict);
 
             });
         }

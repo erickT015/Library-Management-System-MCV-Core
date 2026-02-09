@@ -34,7 +34,7 @@
                 @Html.DisplayNameFor(model => model.FechaCreacion)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FechaCompletada)
+              Detalles
             </th>
             <th></th>
         </tr>
@@ -63,9 +63,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.FechaCreacion)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaCompletada)
-            </td>
+                <td>
+                    @foreach (var detalle in item.Detalles)
+                    {
+                        <div>
+                            <strong>@detalle.Libro.Titulo</strong><br />
+                            Cantidad: @detalle.Cantidad <br />
+                        </div>
+
+                        <hr />
+                    }
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.IdTransaccionBiblioteca">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.IdTransaccionBiblioteca">Details</a> |

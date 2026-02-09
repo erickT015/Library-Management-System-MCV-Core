@@ -1,4 +1,4 @@
-﻿@model AppCrudCore.Models.TransaccionBiblioteca
+﻿@model AppCrudCore.Models.ViewModels.TransaccionBibliotecaCreateViewModel;
 
 @{
     ViewData["Title"] = "Create";
@@ -10,49 +10,79 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="All" class="text-danger"></div>
+            <form asp-controller="TransaccionBiblioteca"  asp-action="Create" method="post">
+
             <div class="form-group">
-                <label asp-for="ClienteId" class="control-label"></label>
-                <select asp-for="ClienteId" class ="form-control" asp-items="ViewBag.ClienteId"></select>
+                <label>Cliente</label>
+                <select asp-for="ClienteId" asp-items="ViewBag.Cliente" class="form-control"></select>
+                <span asp-validation-for="ClienteId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="EmpleadoId" class="control-label"></label>
-                <select asp-for="EmpleadoId" class ="form-control" asp-items="ViewBag.EmpleadoId"></select>
+                <label>Empleado</label>
+                <select asp-for="EmpleadoId" asp-items="ViewBag.Empleados" class="form-control"></select>
+                <span asp-validation-for="EmpleadoId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="TipoServicio" class="control-label"></label>
-                <select asp-for="TipoServicio" class="form-control"></select>
+                <label>Tipo Servicio</label>
+                <select asp-for="TipoServicio" class="form-control">
+                    <option value="1">Venta</option>
+                    <option value="2">Préstamo</option>
+                </select>
                 <span asp-validation-for="TipoServicio" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Origen" class="control-label"></label>
-                <select asp-for="Origen" class="form-control"></select>
+                <label>Origen</label>
+                <select asp-for="Origen" class="form-control">
+                    <option value="1">Tienda Física</option>
+                    <option value="2">Web</option>
+                </select>
                 <span asp-validation-for="Origen" class="text-danger"></span>
             </div>
+
+            <hr />
+
             <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <select asp-for="Estado" class="form-control"></select>
-                <span asp-validation-for="Estado" class="text-danger"></span>
+                <label>Buscar Libro</label>
+                <input type="text" id="buscarLibro" class="form-control"
+                       placeholder="Escriba título o ISBN..." autocomplete="off" />
+
+                <select id="resultadoLibros" name="Detalles[0].LibroId"
+                        class="form-control mt-2">
+                </select>
             </div>
+
             <div class="form-group">
-                <label asp-for="Total" class="control-label"></label>
-                <input asp-for="Total" class="form-control" />
-                <span asp-validation-for="Total" class="text-danger"></span>
+                <label>Cantidad</label>
+                <input name="Detalles[0].Cantidad" class="form-control" type="number" min="1" />
             </div>
-            <div class="form-group">
-                <label asp-for="FechaCreacion" class="control-label"></label>
-                <input asp-for="FechaCreacion" class="form-control" />
-                <span asp-validation-for="FechaCreacion" class="text-danger"></span>
+
+            <hr />
+
+            <div class="card p-3 mt-2">
+
+                <div><strong>Precio Unitario:</strong> ₡ <span id="precioUnitario">0.00</span></div>
+
+                <div><strong>Disponible:</strong> <span id="stockDisponible">0</span></div>
+
+                <div><strong>Subtotal:</strong> ₡ <span id="subtotal">0.00</span></div>
+
             </div>
-            <div class="form-group">
-                <label asp-for="FechaCompletada" class="control-label"></label>
-                <input asp-for="FechaCompletada" class="form-control" />
-                <span asp-validation-for="FechaCompletada" class="text-danger"></span>
+
+            <hr />
+
+            <div class="form-group mt-2" id="grupoFechaDevolucion" style="display:none;">
+                <label>Fecha devolución</label>
+                <input type="date" class="form-control" name="FechaDevolucion" id="fechaDevolucion" />
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+
+
+
+            <button type="submit" class="btn btn-primary">Crear Transacción</button>
+
         </form>
     </div>
 </div>
@@ -62,5 +92,143 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        let debounceTimer;
+        let libroSeleccionado = null;
+
+        const buscarInput = document.getElementById("buscarLibro");
+        const resultadoSelect = document.getElementById("resultadoLibros");
+        const cantidadInput = document.querySelector("input[name='Detalles[0].Cantidad']");
+        const tipoServicioSelect = document.getElementById("TipoServicio");
+
+        const precioSpan = document.getElementById("precioUnitario");
+        const stockSpan = document.getElementById("stockDisponible");
+        const subtotalSpan = document.getElementById("subtotal");
+
+        const grupoFecha = document.getElementById("grupoFechaDevolucion");
+
+
+        // BUSCAR LIBROS
+
+        buscarInput.addEventListener("input", function () {
+
+            clearTimeout(debounceTimer);
+
+            const term = this.value;
+
+            debounceTimer = setTimeout(() => {
+
+                if (term.length < 2) return;
+
+                fetch(`/TransaccionBiblioteca/BuscarLibros?term=${term}`)
+                    .then(r => r.json())
+                    .then(data => {
+
+                        resultadoSelect.innerHTML = "";
+
+                        data.forEach(libro => {
+
+                            const option = document.createElement("option");
+
+                            option.value = libro.id;
+                            option.text = libro.text;
+
+                            option.dataset.precio = libro.precio;
+                            option.dataset.stockVenta = libro.stockVenta;
+                            option.dataset.stockPrestamo = libro.stockPrestamo;
+
+                            resultadoSelect.appendChild(option);
+
+                        });
+
+                    });
+
+            }, 300);
+
+        });
+
+
+        // SELECCIONAR LIBRO
+
+        resultadoSelect.addEventListener("change", function () {
+
+            const option = this.selectedOptions[0];
+
+            libroSeleccionado = option;
+
+            const precio = parseFloat(option.dataset.precio);
+
+            precioSpan.innerText = precio.toFixed(2);
+
+            actualizarStock();
+            actualizarSubtotal();
+
+        });
+
+
+        // CAMBIAR CANTIDAD
+
+        cantidadInput.addEventListener("input", function () {
+
+            actualizarSubtotal();
+
+        });
+
+
+        // CAMBIAR TIPO SERVICIO
+
+        tipoServicioSelect.addEventListener("change", function () {
+
+            const tipo = this.value;
+
+            if (tipo == "2") // préstamo
+                grupoFecha.style.display = "block";
+            else
+                grupoFecha.style.display = "none";
+
+            actualizarStock();
+
+        });
+
+
+        // FUNCIONES
+
+        function actualizarStock() {
+
+            if (!libroSeleccionado) return;
+
+            const tipo = tipoServicioSelect.value;
+
+            let stock = 0;
+
+            if (tipo == "1")
+                stock = libroSeleccionado.dataset.stockVenta;
+            else
+                stock = libroSeleccionado.dataset.stockPrestamo;
+
+            stockSpan.innerText = stock;
+
+        }
+
+
+        function actualizarSubtotal() {
+
+            if (!libroSeleccionado) return;
+
+            const precio = parseFloat(libroSeleccionado.dataset.precio);
+            const cantidad = parseInt(cantidadInput.value) || 0;
+
+            const subtotal = precio * cantidad;
+
+            subtotalSpan.innerText = subtotal.toFixed(2);
+
+        }
+
+    </script>
 }

@@ -22,7 +22,7 @@ namespace AppCrudCore.Controllers
         // GET: TransaccionDetalle
         public async Task<IActionResult> Index()
         {
-            var appDBContext = _context.TransaccionesDetalle.Include(t => t.Libro).Include(t => t.TransaccionBiblioteca);
+            var appDBContext = _context.TransaccionDetalle.Include(t => t.Libro).Include(t => t.TransaccionBiblioteca);
             return View(await appDBContext.ToListAsync());
         }
 
@@ -34,7 +34,7 @@ namespace AppCrudCore.Controllers
                 return NotFound();
             }
 
-            var transaccionDetalle = await _context.TransaccionesDetalle
+            var transaccionDetalle = await _context.TransaccionDetalle
                 .Include(t => t.Libro)
                 .Include(t => t.TransaccionBiblioteca)
                 .FirstOrDefaultAsync(m => m.IdTransaccionDetalle == id);
@@ -50,7 +50,7 @@ namespace AppCrudCore.Controllers
         public IActionResult Create()
         {
             ViewData["LibroId"] = new SelectList(_context.Libro, "IdLibro", "Autor");
-            ViewData["TransaccionBibliotecaId"] = new SelectList(_context.TransaccionesBiblioteca, "IdTransaccionBiblioteca", "IdTransaccionBiblioteca");
+            ViewData["TransaccionBibliotecaId"] = new SelectList(_context.TransaccionBiblioteca, "IdTransaccionBiblioteca", "IdTransaccionBiblioteca");
             return View();
         }
 
@@ -68,7 +68,7 @@ namespace AppCrudCore.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["LibroId"] = new SelectList(_context.Libro, "IdLibro", "Autor", transaccionDetalle.LibroId);
-            ViewData["TransaccionBibliotecaId"] = new SelectList(_context.TransaccionesBiblioteca, "IdTransaccionBiblioteca", "IdTransaccionBiblioteca", transaccionDetalle.TransaccionBibliotecaId);
+            ViewData["TransaccionBibliotecaId"] = new SelectList(_context.TransaccionBiblioteca, "IdTransaccionBiblioteca", "IdTransaccionBiblioteca", transaccionDetalle.TransaccionBibliotecaId);
             return View(transaccionDetalle);
         }
 
@@ -80,13 +80,13 @@ namespace AppCrudCore.Controllers
                 return NotFound();
             }
 
-            var transaccionDetalle = await _context.TransaccionesDetalle.FindAsync(id);
+            var transaccionDetalle = await _context.TransaccionDetalle.FindAsync(id);
             if (transaccionDetalle == null)
             {
                 return NotFound();
             }
             ViewData["LibroId"] = new SelectList(_context.Libro, "IdLibro", "Autor", transaccionDetalle.LibroId);
-            ViewData["TransaccionBibliotecaId"] = new SelectList(_context.TransaccionesBiblioteca, "IdTransaccionBiblioteca", "IdTransaccionBiblioteca", transaccionDetalle.TransaccionBibliotecaId);
+            ViewData["TransaccionBibliotecaId"] = new SelectList(_context.TransaccionBiblioteca, "IdTransaccionBiblioteca", "IdTransaccionBiblioteca", transaccionDetalle.TransaccionBibliotecaId);
             return View(transaccionDetalle);
         }
 
@@ -123,7 +123,7 @@ namespace AppCrudCore.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["LibroId"] = new SelectList(_context.Libro, "IdLibro", "Autor", transaccionDetalle.LibroId);
-            ViewData["TransaccionBibliotecaId"] = new SelectList(_context.TransaccionesBiblioteca, "IdTransaccionBiblioteca", "IdTransaccionBiblioteca", transaccionDetalle.TransaccionBibliotecaId);
+            ViewData["TransaccionBibliotecaId"] = new SelectList(_context.TransaccionBiblioteca, "IdTransaccionBiblioteca", "IdTransaccionBiblioteca", transaccionDetalle.TransaccionBibliotecaId);
             return View(transaccionDetalle);
         }
 
@@ -135,7 +135,7 @@ namespace AppCrudCore.Controllers
                 return NotFound();
             }
 
-            var transaccionDetalle = await _context.TransaccionesDetalle
+            var transaccionDetalle = await _context.TransaccionDetalle
                 .Include(t => t.Libro)
                 .Include(t => t.TransaccionBiblioteca)
                 .FirstOrDefaultAsync(m => m.IdTransaccionDetalle == id);
@@ -152,10 +152,10 @@ namespace AppCrudCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var transaccionDetalle = await _context.TransaccionesDetalle.FindAsync(id);
+            var transaccionDetalle = await _context.TransaccionDetalle.FindAsync(id);
             if (transaccionDetalle != null)
             {
-                _context.TransaccionesDetalle.Remove(transaccionDetalle);
+                _context.TransaccionDetalle.Remove(transaccionDetalle);
             }
 
             await _context.SaveChangesAsync();
@@ -164,7 +164,7 @@ namespace AppCrudCore.Controllers
 
         private bool TransaccionDetalleExists(int id)
         {
-            return _context.TransaccionesDetalle.Any(e => e.IdTransaccionDetalle == id);
+            return _context.TransaccionDetalle.Any(e => e.IdTransaccionDetalle == id);
         }
     }
 }
