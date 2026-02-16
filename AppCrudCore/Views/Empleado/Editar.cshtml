@@ -7,64 +7,69 @@
 
 }
 @model EmpleadoEditViewModel;
-
-<div class="row">
-    <div class="col-sm-8 offset-sm-2">
-        <h2> Editar Empleado</h2>
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <form asp-controller="Empleado" asp-action="Editar" method="post">
-            <input asp-for="IdEmpleado" type="hidden" />
-            <div class="mb-3">
-                <label>Nombre completo</label>
-                <input class="form-control" asp-for="NombreCompleto" type="text" />
-            </div>
-            <div class="mb-3">
-                <label>Cedula</label>
-                <input class="form-control" asp-for="Cedula" type="text" />
-            </div>
-            <div class="mb-3">
-                <label>Correo</label>
-                <input class="form-control" asp-for="Correo" type="text" />
-            </div>
-            <div class="mb-3">
-                <label>Fecha contrato</label>
-                <input class="form-control" asp-for="FechaContrato" type="date" />
-            </div>
-            <select asp-for="RolId"
-                    asp-items="ViewBag.Rol"
-                    class="form-select mb-3">
-                <option value="">Seleccione un rol</option>
-            </select>
-
-            <span asp-validation-for="RolId" class="text-danger"></span>
-            <div class="mb-3">
-                <label>Contraseña Nueva</label>
-                <div class="input-group">
-                    <input asp-for="NuevaPass" type="password" class="form-control" id="NuevaPass" />
-                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('NuevaPass', this)"> <i class="bi bi-eye"></i> </button>
+<section class="main-container">
+    <div class="glass-card">
+        <header class="form-header">
+            <h1 class="title">Nuevo Empleado</h1>
+            <p class="subtitle">Gestión de Empleado - Creación de Empleado</p>
+        </header>
+        <div class="form-wrapper">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <form asp-controller="Empleado" asp-action="Editar" method="post">
+                <input asp-for="IdEmpleado" type="hidden" />
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="field-label">Nombre completo</label>
+                        <input class="custom-input" asp-for="NombreCompleto" type="text" />
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Cedula</label>
+                        <input class="custom-input" asp-for="Cedula" type="text" />
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Correo</label>
+                        <input class="custom-input" asp-for="Correo" type="text" />
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Fecha contrato</label>
+                        <input class="custom-input" asp-for="FechaContrato" type="date" />
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Contraseña Nueva</label>
+                        <div class="input-container">
+                            <input asp-for="NuevaPass" type="password" class="custom-input" id="NuevaPass" />
+                            <button class="toggle-input" type="button" onclick="togglePassword('NuevaPass', this)"> <i class="bi bi-eye"></i> </button>
+                        </div>
+                        <span asp-validation-for="NuevaPass" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Confimar Contraseña Nueva</label>
+                        <div class="input-container">
+                            <input asp-for="ConfirmarPass" type="password" class="custom-input" id="confirmarPass" />
+                            <button class="toggle-input" type="button" onclick="togglePassword('confirmarPass', this)"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <span asp-validation-for="ConfirmarPass" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Seleccione el rol</label>
+                        <select asp-for="RolId" asp-items="ViewBag.Rol" class="custom-input">
+                            <option value="">Seleccione un rol</option>
+                        </select>
+                        <span asp-validation-for="RolId" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label" for="chkActivo">activo</label>
+                        <input class="form-check-input" asp-for="Activo" type="checkbox" id="chkActivo" />
+                    </div>
                 </div>
-                <span asp-validation-for="NuevaPass" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label>Confimar Contraseña Nueva</label>
-                <div class="input-group">
-                    <input asp-for="ConfirmarPass" type="password" class="form-control" id="confirmarPass" />
-                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmarPass', this)"><i class="bi bi-eye"></i></button>
+                <div class="actions">
+                    <button class="btn btn-success" type="submit">Guardar</button>
+                    <a asp-controller="Empleado" asp-action="Lista" class="btn btn-warning">Volver</a>
                 </div>
-                <span asp-validation-for="ConfirmarPass" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input class="form-check-input" asp-for="Activo" type="checkbox" id="chkActivo" />
-                <label class="form-check-label" for="chkActivo">activo</label>
-            </div>
-            <div class="mb-3">
-                <label>Fecha contrato</label>
-                <button class="btn btn-success" type="submit">Guardar</button>
-                <a asp-controller="Empleado" asp-action="Lista" class="btn btn-warning">Volver</a>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
+</section>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 

@@ -22,6 +22,8 @@ namespace AppCrudCore.Models.ViewModels.TransaccionBiblioteca
 
         public DateTime? FechaDevolucion { get; set; }
 
+        public DateTime FechaCreacion { get; set; } = DateTime.Now;
+
         public string? Observaciones { get; set; }
 
         public string? ReferenciaPago { get; set; }
@@ -32,6 +34,38 @@ namespace AppCrudCore.Models.ViewModels.TransaccionBiblioteca
 
         public List<CreateTransaccionDetalleViewModel> Detalles { get; set; }
             = new List<CreateTransaccionDetalleViewModel>();
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+
+            //validar monto pagoado mayor que el total
+            if (MontoPagado > Total)
+            {
+                yield return new ValidationResult(
+                    "El monto pagado no puede ser mayor que el total de la transacción.",
+                    new[] { nameof(MontoPagado) }
+                    );
+            }
+
+            //validar fecha obligatoria si es prestamo
+            if (TipoServicio == TipoServicio.Prestamo)
+            {
+                if (!FechaDevolucion.HasValue)
+                {
+                    yield return new ValidationResult(
+                        "La fecha de devolución es obligatoria para préstamos.",
+                        new[] { nameof(FechaDevolucion) }
+                    );
+                }
+                else if (FechaDevolucion.Value <= FechaCreacion)
+                {
+                    yield return new ValidationResult(
+                        "La fecha de devolución debe ser posterior a la fecha de creación.",
+                        new[] { nameof(FechaDevolucion) }
+                    );
+                }
+            }
+        }
     }
 
 

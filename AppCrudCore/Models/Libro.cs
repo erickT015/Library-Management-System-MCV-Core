@@ -34,6 +34,11 @@ namespace AppCrudCore.Models
         public decimal PrecioVenta { get; set; }
 
 
+        [Required(ErrorMessage = "El precio de préstamo es obligatorio")]
+        [Range(0, (double)decimal.MaxValue, ErrorMessage = "El precio no puede ser negativo")]
+        public decimal PrecioPrestamo { get; set; }
+
+
         [Required(ErrorMessage = "La cantidad total es obligatoria")]
         [Range(0,int.MaxValue)] //minimo 0, no negativos]
         public int StockTotal { get; set; }

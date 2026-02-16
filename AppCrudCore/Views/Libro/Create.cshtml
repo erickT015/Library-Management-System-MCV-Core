@@ -4,79 +4,86 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<section class="main-container">
+    <div class="glass-card">
+        <header class="form-header">
+            <h1 class="title">Nuevo Libro</h1>
+            <p class="subtitle">Gestión de Libro - Creación de Libro</p>
+        </header>
 
-<h4>Libro</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Autor" class="control-label"></label>
-                <input asp-for="Autor" class="form-control" />
-                <span asp-validation-for="Autor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ISBN" class="control-label"></label>
-                <input asp-for="ISBN" class="form-control" />
-                <span asp-validation-for="ISBN" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AnioPublicacion" class="control-label"></label>
-                <input asp-for="AnioPublicacion" class="form-control" />
-                <span asp-validation-for="AnioPublicacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Resumen" class="control-label"></label>
-                <input asp-for="Resumen" class="form-control" />
-                <span asp-validation-for="Resumen" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PrecioVenta" class="control-label"></label>
-                <input asp-for="PrecioVenta" class="form-control" />
-                <span asp-validation-for="PrecioVenta" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StockTotal" class="control-label"></label>
-                <input asp-for="StockTotal" class="form-control" />
-                <span asp-validation-for="StockTotal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StockPrestamo" class="control-label"></label>
-                <input asp-for="StockPrestamo" class="form-control" />
-                <span asp-validation-for="StockPrestamo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StockVenta" class="control-label"></label>
-                <input asp-for="StockVenta" class="form-control" />
-                <span asp-validation-for="StockVenta" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="CategoriaId" class="control-label"></label>
-                <select asp-for="CategoriaId" class ="form-control" asp-items="ViewBag.CategoriaId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        <div class="form-wrapper">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label  class="field-label">Título</label>
+                        <input asp-for="Titulo" class="custom-input" />
+                        <span asp-validation-for="Titulo" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">Autor</label>
+                        <input asp-for="Autor" class="custom-input" />
+                        <span asp-validation-for="Autor" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">ISBN</label>
+                        <input asp-for="ISBN" class="custom-input" />
+                        <span asp-validation-for="ISBN" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Año Publicación</label>
+                        <input asp-for="AnioPublicacion" class="custom-input" />
+                        <span asp-validation-for="AnioPublicacion" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">Resumen</label>
+                        <input asp-for="Resumen" class="custom-input" />
+                        <span asp-validation-for="Resumen" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">Precio Venta</label>
+                        <input asp-for="PrecioVenta" class="custom-input" />
+                        <span asp-validation-for="PrecioVenta" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">Cantidad Total</label>
+                        <input asp-for="StockTotal" class="custom-input" />
+                        <span asp-validation-for="StockTotal" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">Cantidad Préstamo</label>
+                        <input asp-for="StockPrestamo" class="custom-input" />
+                        <span asp-validation-for="StockPrestamo" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">Cantidad Venta</label>
+                        <input asp-for="StockVenta" class="custom-input" />
+                        <span asp-validation-for="StockVenta" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">Categoría</label>
+                        <select asp-for="CategoriaId" class="custom-select" asp-items="ViewBag.CategoriaId"></select>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">
+                            <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
+                        </label>
+                    </div>
+                </div>
+                        <hr>
+                <div class="action">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+                <div>
+                    <a asp-action="Index">Volver a la lista</a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+</section>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

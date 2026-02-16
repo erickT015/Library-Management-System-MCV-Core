@@ -4,76 +4,96 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<section class="main-container">
+    <div class="glass-card">
+        <header class="form-header">
+            <h1 class="title">Editar Cliente</h1>
+            <p class="subtitle">Actualización de información de usuario y credenciales</p>
+        </header>
 
-<h4>Cliente</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdCliente" />
-            <div class="form-group">
-                <label asp-for="Cedula" class="control-label"></label>
-                <input asp-for="Cedula" class="form-control" />
-                <span asp-validation-for="Cedula" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NombreCompleto" class="control-label"></label>
-                <input asp-for="NombreCompleto" class="form-control" />
-                <span asp-validation-for="NombreCompleto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Correo" class="control-label"></label>
-                <input asp-for="Correo" class="form-control" />
-                <span asp-validation-for="Correo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
-                <span asp-validation-for="Telefono" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Direccion" class="control-label"></label>
-                <input asp-for="Direccion" class="form-control" />
-                <span asp-validation-for="Direccion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaRegistro" class="control-label"></label>
-                <input asp-for="FechaRegistro" class="form-control" />
-                <span asp-validation-for="FechaRegistro" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PasswordHash" class="control-label"></label>
-                <input asp-for="PasswordHash" class="form-control" />
-                <span asp-validation-for="PasswordHash" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="PasswordTemp" /> @Html.DisplayNameFor(model => model.PasswordTemp)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="RolId" class="control-label"></label>
-                <select asp-for="RolId" class="form-control" asp-items="ViewBag.RolId"></select>
-                <span asp-validation-for="RolId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        <div class="form-wrapper">
+            <form asp-action="Edit" class="modern-form">
+                <div asp-validation-summary="ModelOnly" class="error-text"></div>
+                <input type="hidden" asp-for="IdCliente" />
+
+                <div class="form-grid">
+                    @* Datos Personales *@
+                    <div class="input-group">
+                        <label asp-for="Cedula" class="field-label"></label>
+                        <input asp-for="Cedula" class="custom-input" placeholder="0-0000-0000" />
+                        <span asp-validation-for="Cedula" class="error-text"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label asp-for="NombreCompleto" class="field-label"></label>
+                        <input asp-for="NombreCompleto" class="custom-input" />
+                        <span asp-validation-for="NombreCompleto" class="error-text"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label asp-for="Correo" class="field-label"></label>
+                        <input asp-for="Correo" class="custom-input" type="email" />
+                        <span asp-validation-for="Correo" class="error-text"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label asp-for="Telefono" class="field-label"></label>
+                        <input asp-for="Telefono" class="custom-input" />
+                        <span asp-validation-for="Telefono" class="error-text"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label asp-for="FechaRegistro" class="field-label"></label>
+                        <input asp-for="FechaRegistro" class="custom-input" readonly />
+                        <span asp-validation-for="FechaRegistro" class="error-text"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label asp-for="RolId" class="field-label">Rol del Usuario</label>
+                        <select asp-for="RolId" class="custom-select" asp-items="ViewBag.RolId"></select>
+                        <span asp-validation-for="RolId" class="error-text"></span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label asp-for="Direccion" class="field-label"></label>
+                    <textarea asp-for="Direccion" class="custom-input" rows="2"></textarea>
+                    <span asp-validation-for="Direccion" class="error-text"></span>
+                </div>
+
+                <div class="separator"></div>
+
+                @* Seguridad y Estado *@
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label asp-for="PasswordHash" class="field-label">Contraseña (Hash)</label>
+                        <input asp-for="PasswordHash" class="custom-input" type="password" />
+                        <span asp-validation-for="PasswordHash" class="error-text"></span>
+                    </div>
+
+                    <div class="input-group" style="justify-content: center; gap: 10px; flex-direction: row; align-items: center; padding-top: 25px;">
+                        <div class="custom-checkbox-wrapper">
+                            <input class="form-check-input" asp-for="PasswordTemp" />
+                            <label class="field-label" style="margin-bottom: 0;">@Html.DisplayNameFor(model => model.PasswordTemp)</label>
+                        </div>
+                        <div class="custom-checkbox-wrapper">
+                            <input class="form-check-input" asp-for="Activo" />
+                            <label class="field-label" style="margin-bottom: 0;">@Html.DisplayNameFor(model => model.Activo)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn-primary-submit">Guardar Cambios</button>
+                    <a asp-action="Index" class="btn-back">Cancelar y Regresar</a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+</section>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -12,6 +12,7 @@ namespace AppCrudCore.Data
         }
 
         public DbSet<Empleado> Empleados { get; set; }
+        public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Rol> Rol { get; set; }
         public DbSet<Cliente> Cliente { get; set; }
         public DbSet<Libro> Libro { get; set; }
@@ -136,6 +137,8 @@ namespace AppCrudCore.Data
                 .HasForeignKey(col => col.CategoriaId);
 
                 tb.Property(col => col.PrecioVenta).HasPrecision(10, 2);
+
+                tb.Property(col => col.PrecioPrestamo).HasPrecision(10, 2);
             });
 
             modelBuilder.Entity<Libro>().ToTable(tb =>
@@ -184,7 +187,6 @@ namespace AppCrudCore.Data
                 );
 
             });
-
 
             //==PROPIEDADES DE TABLA TRANSACCION BIBLIOTECA
             modelBuilder.Entity<TransaccionBiblioteca>(tb =>
@@ -242,6 +244,26 @@ namespace AppCrudCore.Data
                 .HasForeignKey(col => col.EmpleadoId)
                  .OnDelete(DeleteBehavior.Restrict);
 
+                // FK Usuario (usuario general asociado a la transacción)
+                tb.HasOne(col => col.Usuario)
+                    .WithMany()
+                    .HasForeignKey(col => col.UsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+
+                // FK Usuario - ClienteUsuario (quien compra)
+                tb.HasOne(col => col.ClienteUsuario)
+                    .WithMany()
+                    .HasForeignKey(col => col.ClienteUsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+
+                // FK Usuario - EmpleadoUsuario (quien atiende)
+                tb.HasOne(col => col.EmpleadoUsuario)
+                    .WithMany()
+                    .HasForeignKey(col => col.EmpleadoUsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
             });
 
             //==PROPIEDADES DE LA TABLA TRANSACCION DETALLE
@@ -268,6 +290,68 @@ namespace AppCrudCore.Data
                .OnDelete(DeleteBehavior.Cascade);
 
             });
+
+            //==PROPIEDADES DE LA TABLA DE USUARIO
+            modelBuilder.Entity<Usuario>(tb =>
+            {
+                tb.HasKey(col => col.IdUsuario);
+                tb.Property(col => col.IdUsuario)
+                .UseIdentityColumn()
+                .ValueGeneratedOnAdd();
+
+                // CORREO
+                tb.Property(u => u.Correo)
+                    .IsRequired()
+                    .HasMaxLength(150);
+
+                // PASSWORD HASH
+                tb.Property(u => u.PasswordHash)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                // CEDULA
+                tb.Property(u => u.Cedula)
+                    .IsRequired()
+                    .HasMaxLength(20);
+                tb.HasIndex(u => u.Cedula).IsUnique();
+
+                // NOMBRE
+                tb.Property(u => u.NombreCompleto)
+                    .IsRequired()
+                    .HasMaxLength(150);
+
+                // TELEFONO
+                tb.Property(u => u.Telefono).HasMaxLength(20);
+
+                // DIRECCION
+                tb.Property(u => u.Direccion).HasMaxLength(250);
+
+                // FECHA REGISTRO
+                tb.Property(u => u.FechaRegistro)
+                    .IsRequired()
+                    .HasDefaultValueSql("GETDATE()");
+
+                // ULTIMO LOGIN
+                tb.Property(u => u.UltimoLogin).IsRequired(false);
+
+
+                // REQUIERE CAMBIO PASSWORD
+                tb.Property(u => u.RequiereCambioPassword)
+                    .IsRequired()
+                    .HasDefaultValue(false);
+
+                // ACTIVO
+                tb.Property(u => u.Activo)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                // RELACION CON ROL
+                tb.HasOne(u => u.Rol)
+                    .WithMany()
+                    .HasForeignKey(u => u.RolId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
         }
 
     }

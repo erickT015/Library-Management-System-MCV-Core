@@ -5,50 +5,58 @@
 }
 @model AppCrudCore.Models.Empleado;
 
-<div class="row">
-    <div class="col-sm-8 offset-sm-2">
-        <h2> Nuevo Empleado</h2>
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <form asp-controller="Empleado" asp-action="Nuevo" method="post">
-            <div class="mb-3">
-                <label>Nombre completo</label>
-                <input class="form-control" asp-for="NombreCompleto" type="text" />
-            </div>
-            <div class="mb-3">
-                <label>Cédula</label>
-                <input class="form-control" asp-for="Cedula" type="text" />
-            </div>
-            <div class="mb-3">
-                <label>Correo</label>
-                <input class="form-control" asp-for="Correo" type="text" />
-            </div>
-            <div class="mb-3">
-            <select asp-for="RolId"
-                    asp-items="ViewBag.Rol"
-                    class="form-select mb-3">
-                <option value="">Seleccione un rol</option>
-            </select>
-            </div>
-            <div class="mb-3">
-                <label>Contraseña</label>
-                <input class="form-control" asp-for="PasswordHash" type="password" />
-            </div>
-            <div class="mb-3">
-                <label>Fecha contrato</label>
-                <input class="form-control" asp-for="FechaContrato" type="date" />
-            </div>
-            <div class="mb-3">
-                <input class="form-check-input" asp-for="Activo" type="checkbox" id="chkActivo" />
-                <label class="form-check-label" for="chkActivo">activo</label>
-            </div>
-            <div class="mb-3">
-                <label>Fecha contrato</label>
-               <button class="btn btn-success" type="submit">Guardar</button>
-               <a asp-controller="Empleado" asp-action="Lista" class="btn btn-warning">Volver</a>
-            </div>
-        </form>
+<section class="main-container">
+    <div class="glass-card">
+        <header class="form-header">
+            <h1 class="title">Nuevo Empleado</h1>
+            <p class="subtitle">Gestión de Empleado - Creación de Empleado</p>
+        </header>
+
+        <div class="form-wrapper">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <form asp-controller="Empleado" asp-action="Nuevo" method="post">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="field-label">Nombre completo</label>
+                        <input class="custom-input" asp-for="NombreCompleto" type="text" />
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Cédula</label>
+                        <input class="custom-input" asp-for="Cedula" type="text" />
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Correo</label>
+                        <input class="custom-input" asp-for="Correo" type="text" />
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Seleccione el rol</label>
+                        <select asp-for="RolId" asp-items="ViewBag.Rol"
+                                class="custom-select">
+                            <option value="">Seleccione un rol</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Contraseña</label>
+                        <input class="custom-input" asp-for="PasswordHash" type="password" />
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Fecha contrato</label>
+                        <input class="custom-input" asp-for="FechaContrato" type="date" />
+                    </div>
+                    <div class="input-group">
+                        <input class="form-check-input" asp-for="Activo" type="checkbox" id="chkActivo" />
+                        <label class=" field-label" for="chkActivo">activo</label>
+                    </div>
+                </div>
+                <div class="separator"></div>
+                <div class="actions">
+                    <button class="btn-primary-submit" type="submit">Guardar</button>
+                    <a asp-controller="Empleado" asp-action="Lista" class="btn-back">Regresar al Listado</a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+</section>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 

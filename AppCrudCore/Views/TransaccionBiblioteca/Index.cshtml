@@ -24,6 +24,7 @@
                         <th>Estado</th>
                         <th>Total</th>
                         <th>Fecha</th>
+                        <th>Fecha Devolución</th>
                         <th>Detalles</th>
                         <th class="text-center">Acciones</th>
                     </tr>
@@ -47,6 +48,7 @@
                             </td>
                             <td class="price-cell">₡@Html.DisplayFor(modelItem => item.Total)</td>
                             <td class="date-cell">@item.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                            <td class="date-cell">@item.FechaDevolucion</td>
                             <td>
                                 <div class="details-container">
                                     @foreach (var detalle in item.Detalles)

@@ -1,0 +1,105 @@
+﻿@model AppCrudCore.Models.ViewModels.Usuario.UsuarioEditViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<section class="main-container">
+    <div class="glass-card">
+        <header class="form-header">
+            <h1 class="title">Editar Usuario</h1>
+            <p class="subtitle">Gestión de Usuario</p>
+        </header>
+        <div class="form-wrapper">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="IdUsuario" />
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="field-label"> Nombre completo</label>
+                        <input asp-for="NombreCompleto" class="custom-input" />
+                        <span asp-validation-for="NombreCompleto" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Teléfono</label>
+                        <input asp-for="Telefono" class="custom-input" />
+                        <span asp-validation-for="Telefono" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label"> Cédula</label>
+                        <input asp-for="Cedula" class="custom-input" />
+                        <span asp-validation-for="Cedula" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label  class="field-label">Correo</label>
+                        <input asp-for="Correo" class="custom-input" />
+                        <span asp-validation-for="Correo" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label"> Dirección</label>
+                        <input asp-for="Direccion" class="custom-input" />
+                        <span asp-validation-for="Direccion" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Rol</label>
+                        <select asp-for="RolId" class="custom-input" asp-items="ViewBag.RolId"></select>
+                        <span asp-validation-for="RolId" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Nueva contraseña</label>
+                        <input asp-for="NuevaPassword" class="custom-input" type="password" id="NuevaPassword" />
+                        <button class="toggle-input" type="button" onclick="togglePassword('NuevaPassword', this)"><i class="bi bi-eye"></i></button>
+                        <span asp-validation-for="NuevaPassword" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Confirmar contraseña</label>
+                        <input asp-for="ConfirmarPassword" class="custom-input" type="password" id="ConfirmarPassword" />
+                        <button class="toggle-input" type="button" onclick="togglePassword('ConfirmarPassword', this)"><i class="bi bi-eye"></i></button>
+                        <span asp-validation-for="ConfirmarPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="RequiereCambioPassword" />   Contraseña temporal</label>
+                    </div>
+                    <div class="form-group form-check">
+                        <label class="form-check-label">
+                            <input class="custom-select" asp-for="Activo" />   Activo
+                        </label>
+                    </div>
+                </div>
+                <div class="separator"></div>
+                <div class="actions">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <div>
+                        <a asp-action="Index">Back to List</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector("i");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    }
+</script>

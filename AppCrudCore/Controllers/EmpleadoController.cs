@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 
 namespace AppCrudCore.Controllers
 {
-
-
     public class EmpleadoController : Controller
     {
 

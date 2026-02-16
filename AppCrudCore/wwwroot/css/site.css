@@ -33,6 +33,7 @@ body {
 
 /*====Transaccino biblioteca / create*/
 
+
 :root {
     --primary: #4f46e5;
     --primary-hover: #4338ca;
@@ -231,7 +232,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 }
 
 .btn-create {
@@ -281,7 +282,7 @@ body {
         }
 
     .modern-table td {
-        padding: 15px;
+        padding: 8px;
         vertical-align: middle;
         font-size: 0.9rem;
         border-top: 1px solid var(--border-color);
@@ -373,3 +374,75 @@ body {
         filter: grayscale(0) brightness(1);
         transform: scale(1.2);
     }
+
+
+    /*===BOTON INTERNO EN INPUT*/
+/* Contenedor relativo para que el botón se posicione respecto a este */
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    /* El input debe ocupar todo el ancho y tener espacio a la derecha */
+    .input-container .custom-input {
+        width: 100%;
+        padding-right: 45px; /* Espacio para que el texto no toque el ojo */
+    }
+
+/* El botón posicionado a la derecha */
+.toggle-input {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+    .toggle-input:hover {
+        color: var(--text-main);
+    }
+
+    /* Quitar el borde azul por defecto de Bootstrap si lo usas */
+    .toggle-input:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    /*===== DETALLES ====*/
+.detail-block {
+    margin-bottom: 15px;
+    padding: 5px 0;
+}
+
+.detail-value {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    font-weight: 500;
+    margin-top: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Línea sutil */
+    padding-bottom: 5px;
+}
+
+    .detail-value.italic {
+        font-style: italic;
+        color: var(--text-muted);
+    }
+
+.badge-role {
+    background: var(--primary);
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.text-danger {
+    color: #ef4444;
+}

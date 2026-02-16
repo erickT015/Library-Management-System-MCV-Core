@@ -18,6 +18,18 @@ namespace AppCrudCore.Models
         public int? EmpleadoId { get; set; } //FK
         public Empleado? Empleado { get; set; }
 
+        public int? UsuarioId { get; set; } //FK
+        public Usuario Usuario { get; set; }
+
+
+        // quien compra
+        public int? ClienteUsuarioId { get; set; }
+        public Usuario ClienteUsuario { get; set; }
+
+        // quien atendió
+        public int? EmpleadoUsuarioId { get; set; }
+        public Usuario EmpleadoUsuario { get; set; }
+
 
         [Required]
         public TipoServicio TipoServicio { get; set; }

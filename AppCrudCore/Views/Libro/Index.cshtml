@@ -4,92 +4,104 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<section class="main-container">
+    <div class="glass-card table-page">
+        <header class="table-header">
+            <div class="header-content">
+                <h1 class="title">Gestioón de Libros</h1>
+                <p class="subtitle">Gestiona facilmente tus libros</p>
+            </div>
+            <a asp-action="Create" class="btn-create"> agregar Libro</a>
+        </header>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Titulo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Autor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ISBN)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AnioPublicacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Resumen)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrecioVenta)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StockTotal)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StockPrestamo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StockVenta)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Activo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Categoria)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Titulo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Autor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ISBN)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AnioPublicacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Resumen)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrecioVenta)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StockTotal)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StockPrestamo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StockVenta)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Activo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Categoria.Nombre)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdLibro">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdLibro">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdLibro">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Titulo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Autor)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ISBN)
+                        </th>
+                        <th>
+                            Año Publicación
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Resumen)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.PrecioVenta)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StockTotal)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StockPrestamo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StockVenta)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Activo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Categoria)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Titulo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Autor)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ISBN)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AnioPublicacion)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Resumen)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PrecioVenta)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StockTotal)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StockPrestamo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StockVenta)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Activo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Categoria.Nombre)
+                            </td>
+                            <td class="actions-cell">
+                                <div class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@item.IdLibro">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@item.IdLibro">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.IdLibro">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
