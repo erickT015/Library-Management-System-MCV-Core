@@ -1,67 +1,103 @@
-\# AppCrudCore – ASP.NET Core MVC
+# Library Management System — ASP.NET Core MVC
 
+Sistema web desarrollado con **ASP.NET Core MVC** y **Entity Framework Core (Code First)**, enfocado en implementar arquitectura backend profesional, manejo seguro de usuarios y modelado relacional para sistemas transaccionales.
 
+---
 
-Proyecto en progreso desarrollado con \*\*ASP.NET Core MVC\*\* y \*\*Entity Framework Core\*\*, enfocado en reforzar buenas prácticas de backend, arquitectura MVC y modelado de datos con Code First.
+## Objetivo del proyecto
 
+Construir un sistema de gestión de biblioteca aplicando buenas prácticas reales de desarrollo backend, incluyendo:
 
+- Modelado relacional correcto
+- Gestión segura de usuarios
+- Arquitectura MVC estructurada
+- Base para autenticación profesional
 
-\## Objetivo del proyecto
+---
 
-Evolucionar un CRUD base hacia un sistema más completo (tipo biblioteca), incorporando:
+## Arquitectura implementada
 
-\- Modelado correcto de entidades
-\- Uso de Fluent API
-\- Migraciones con EF Core
-\- Buenas prácticas en controladores MVC
-\- Separación de responsabilidades
+El sistema utiliza una arquitectura basada en:
 
+- **Domain Models** para entidades de base de datos  
+- **ViewModels (DTO Pattern)** para proteger la capa de presentación  
+- **Entity Framework Core (Code First)** para control del esquema  
+- **Fluent API Configuration** para relaciones, restricciones e integridad  
 
+Esto permite una clara separación entre Presentation, Domain y Data Access.
 
-\## Estado actual
+---
 
-\- CRUD funcional de Empleados
-\- DbContext configurado con Fluent API
-\- Migraciones aplicadas a base de datos
-\- Campo de contraseña preparado como `PasswordHash`
-\- Uso de appsettings de ejemplo (sin credenciales reales)
+## Sistema de gestión de usuarios
 
+Se implementó un sistema completo de usuarios utilizando:
 
+- Entidad `Usuario` como Identity principal  
+- Relación con entidad `Rol`  
+- CRUD completo de usuarios  
+- Password hashing using **BCrypt**  
+- Persistencia exclusiva de `PasswordHash`  
+- Uso de **ViewModels** para evitar exposición directa del modelo  
+- Restricciones de unicidad en Correo y Cedula  
 
-\## La seguridad se implementa de forma incremental:
+---
 
-\- Hashing de contraseñas con BCrypt en la creación de empleados
-\- Cambio de contraseña opcional en la edición de empleados
-\- Separación entre entidad de dominio y ViewModel para formularios
-\- Validaciones básicas en vistas MVC
+## Modelado relacional avanzado
 
-Las validaciones avanzadas y flujos de autenticación se abordarán en etapas posteriores.
+La entidad `TransaccionBiblioteca` implementa:
 
+- **Foreign Keys**
+- **Self-referencing relationships**
+- Referencias múltiples hacia `Usuario` (cliente y empleado)
+- Control de integridad mediante Fluent API
 
+Permitiendo trazabilidad completa de transacciones.
 
-\## 🛠️ Tecnologías
+---
 
-\- ASP.NET Core MVC
-\- Entity Framework Core
-\- SQL Server
-\- Fluent API
-\- Razor Views
-\- Bootstrap
+## Tecnologías utilizadas
 
+**Backend**
+- ASP.NET Core MVC
+- Entity Framework Core
+- LINQ
+- Fluent API
+- Code First Migrations
 
+**Database**
+- SQL Server
+- Relational Database Modeling
+- Foreign Key Constraints
 
-\## Próximos pasos
+**Security**
+- BCrypt Password Hashing
+- DTO Pattern (ViewModels)
+- Secure Identity Modeling
 
-\- Implementar hashing de contraseñas al crear/editar usuarios
-\- Agregar entidades de dominio (Libros, Clientes, Préstamos)
-\- Definir relaciones con Code First
-\- Mejorar validaciones y UX
+**Frontend**
+- Razor Views
+- Bootstrap
 
+---
 
+## Estado actual
 
-\## Notas
+Implementado:
 
-Este repositorio es retomando viejos conceptos y conocimientos y adecuándolo al entorno actual. Blessings c:.
+- CRUD completo de Usuarios
+- Password hashing seguro con BCrypt
+- Uso correcto de ViewModels (DTO Pattern)
+- Configuración avanzada mediante Fluent API
+- Migraciones funcionales con EF Core
 
+En desarrollo:
 
+- Cookie Authentication
+- Claims-based Identity
+- Policy-based Authorization
 
+---
+
+## Objetivo técnico del proyecto
+
+Aplicar prácticas reales de desarrollo backend utilizando el ecosistema .NET, incluyendo modelado relacional, gestión segura de credenciales y arquitectura MVC profesional.
