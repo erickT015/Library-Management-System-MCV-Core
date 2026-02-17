@@ -1,4 +1,4 @@
-﻿@model AppCrudCore.Models.TransaccionBiblioteca
+﻿@model AppCrudCore.Models.ViewModels.TransaccionBiblioteca.TransaccionBibliotecaEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,45 +13,27 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdTransaccionBiblioteca" />
-            <div class="form-group">
-                <label asp-for="ClienteId" class="control-label"></label>
-                <select asp-for="ClienteId" class="form-control" asp-items="ViewBag.ClienteId"></select>
-                <span asp-validation-for="ClienteId" class="text-danger"></span>
+            <div class="input-group">
+                <label>Estado</label>
+                <div class="input-group">
+                    <label class="field-label">Estado</label>
+                    <select asp-for="Estado" class="custom-select">
+                        <option value="1">Bodega</option>
+                        <option value="2">Prestado</option>
+                        <option value="3">Vendido</option>
+                        <option value="4">Cancelado</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="EmpleadoId" class="control-label"></label>
-                <select asp-for="EmpleadoId" class="form-control" asp-items="ViewBag.EmpleadoId"></select>
-                <span asp-validation-for="EmpleadoId" class="text-danger"></span>
+
+            <div class="input-group">
+                <label>Fecha Devolución</label>
+                <input asp-for="FechaDevolucion" type="date" class="custom-input" />
             </div>
-            <div class="form-group">
-                <label asp-for="TipoServicio" class="control-label"></label>
-                <select asp-for="TipoServicio" class="form-control"></select>
-                <span asp-validation-for="TipoServicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Origen" class="control-label"></label>
-                <select asp-for="Origen" class="form-control"></select>
-                <span asp-validation-for="Origen" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <select asp-for="Estado" class="form-control"></select>
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Total" class="control-label"></label>
-                <input asp-for="Total" class="form-control" />
-                <span asp-validation-for="Total" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaCreacion" class="control-label"></label>
-                <input asp-for="FechaCreacion" class="form-control" />
-                <span asp-validation-for="FechaCreacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaCompletada" class="control-label"></label>
-                <input asp-for="FechaCompletada" class="form-control" />
-                <span asp-validation-for="FechaCompletada" class="text-danger"></span>
+
+            <div class="input-group">
+                <label>Observaciones</label>
+                <textarea asp-for="Observaciones" class="custom-input"></textarea>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

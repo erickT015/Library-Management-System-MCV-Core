@@ -74,7 +74,7 @@
 
                     <div class="input-group small">
                         <label class="field-label">Cantidad</label>
-                        <input name="Detalles[0].Cantidad" class="custom-input" type="number" min="1" value="1" />
+                        <input name="Detalles[0].Cantidad" class="custom-input" type="number" min="1" value="0" />
                     </div>
                 </div>
 
@@ -133,8 +133,8 @@
     }
 
     <script>
-
         const PRECIO_PRESTAMO = 500;
+
         let debounceTimer;
         let libroSeleccionado = null;
 
@@ -146,160 +146,272 @@
         const precioSpan = document.getElementById("precioUnitario");
         const stockSpan = document.getElementById("stockDisponible");
         const subtotalSpan = document.getElementById("subtotal");
+
         const grupoFecha = document.getElementById("grupoFechaDevolucion");
         const btnConfirmar = document.querySelector(".btn-primary-submit");
 
+        const montoPagadoInput = document.querySelector("input[name='MontoPagado']");
 
-        // 1. BUSCAR LIBROS
-        buscarInput.addEventListener("input", function () {
+
+        // =============================
+        // ACTUALIZAR DESDE SELECCIÓN
+        // =============================
+        function actualizarDatosDesdeSeleccion(){
+
+            if(resultadoSelect.selectedOptions.length === 0) return;
+
+            libroSeleccionado = resultadoSelect.selectedOptions[0];
+
+            actualizarPrecio();
+            actualizarStock();
+            actualizarSubtotal();
+            validarStockDisponible();
+            validarMontoPagado();
+        }
+
+
+        // =============================
+        // ACTUALIZAR STOCK
+        // =============================
+        function actualizarStock(){
+
+            if(!libroSeleccionado) return;
+
+            let stockBase = 0;
+
+            if(tipoServicioSelect.value === "1")
+                stockBase = parseInt(libroSeleccionado.dataset.stockVenta) || 0;
+            else
+                stockBase = parseInt(libroSeleccionado.dataset.stockPrestamo) || 0;
+
+            const cantidad = parseInt(cantidadInput.value) || 0;
+
+            cantidadInput.max = stockBase;
+            cantidadInput.disabled = stockBase <= 0;
+
+            const stockVisual = Math.max(stockBase - cantidad, 0);
+
+            stockSpan.innerText = stockVisual;
+
+            validarStockDisponible();
+        }
+
+
+        // =============================
+        // OBTENER PRECIO ACTUAL (USA DB)
+        // =============================
+        function obtenerPrecioActual(){
+
+            if(!libroSeleccionado) return 0;
+
+            if(tipoServicioSelect.value === "2"){
+                return parseFloat(libroSeleccionado.dataset.precioPrestamo) || 0;
+            }
+
+            return parseFloat(libroSeleccionado.dataset.precioVenta) || 0;
+        }
+
+
+        // =============================
+        // ACTUALIZAR PRECIO
+        // =============================
+        function actualizarPrecio(){
+
+            const precio = obtenerPrecioActual();
+
+            precioSpan.innerText = precio.toFixed(2);
+        }
+
+
+        // =============================
+        // ACTUALIZAR SUBTOTAL
+        // =============================
+        function actualizarSubtotal(){
+
+            if(!validarStockDisponible()) return;
+
+            if(!libroSeleccionado) return;
+
+            const precio = obtenerPrecioActual();
+
+            const cantidad = parseInt(cantidadInput.value) || 0;
+
+            const subtotal = precio * cantidad;
+
+            subtotalSpan.innerText = subtotal.toFixed(2);
+
+            validarMontoPagado();
+        }
+
+
+        // =============================
+        // VALIDAR STOCK
+        // =============================
+        function validarStockDisponible(){
+
+            if(!libroSeleccionado){
+
+                btnConfirmar.disabled = true;
+                return false;
+            }
+
+            let stockBase = 0;
+
+            if(tipoServicioSelect.value === "1")
+                stockBase = parseInt(libroSeleccionado.dataset.stockVenta) || 0;
+            else
+                stockBase = parseInt(libroSeleccionado.dataset.stockPrestamo) || 0;
+
+            const cantidad = parseInt(cantidadInput.value) || 0;
+
+            if(stockBase <= 0){
+
+                stockSpan.innerText = "0";
+                stockSpan.style.color = "#ff4d4d";
+
+                btnConfirmar.disabled = true;
+
+                return false;
+            }
+
+            if(cantidad > stockBase){
+
+                cantidadInput.value = stockBase;
+
+                stockSpan.innerText = "0";
+                stockSpan.style.color = "#ff4d4d";
+
+                btnConfirmar.disabled = true;
+
+                return false;
+            }
+
+            stockSpan.style.color = "";
+
+            btnConfirmar.disabled = false;
+
+            return true;
+        }
+
+
+        // =============================
+        // VALIDAR MONTO PAGADO
+        // =============================
+        function validarMontoPagado(){
+
+            const subtotal = parseFloat(subtotalSpan.innerText) || 0;
+
+            const montoPagado = parseFloat(montoPagadoInput.value) || 0;
+
+            if(montoPagado > subtotal){
+
+                montoPagadoInput.style.borderColor = "#ff4d4d";
+
+                btnConfirmar.disabled = true;
+
+                return false;
+            }
+
+            montoPagadoInput.style.borderColor = "";
+
+            return true;
+        }
+
+
+        // =============================
+        // BUSCAR LIBROS
+        // =============================
+        buscarInput.addEventListener("input", function(){
+
             clearTimeout(debounceTimer);
+
             const term = this.value;
 
             debounceTimer = setTimeout(() => {
-                if (term.length < 2) return;
+
+                if(term.length < 2) return;
 
                 fetch(`/TransaccionBiblioteca/BuscarLibros?term=${term}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        resultadoSelect.innerHTML = "";
+                .then(r => r.json())
+                .then(data => {
 
-                        if(data.length > 0) {
-                            data.forEach(libro => {
-                                const option = document.createElement("option");
-                                option.value = libro.id;
-                                option.text = libro.text;
-                                // Asegúrate que estos nombres coincidan con lo que devuelve tu JSON del Controller
-                                option.dataset.precioVenta = libro.precio;
-                                option.dataset.stockVenta = libro.stockVenta;
-                                option.dataset.stockPrestamo = libro.stockPrestamo;
-                                resultadoSelect.appendChild(option);
-                            });
+                    resultadoSelect.innerHTML = "";
 
-                            // CAMBIO CLAVE: Forzar la selección del primer elemento y actualizar
-                            resultadoSelect.selectedIndex = 0;
-                            actualizarDatosDesdeSeleccion();
-                        }
-                    });
+                    if(data.length > 0){
+
+                        data.forEach(libro => {
+
+                            const option = document.createElement("option");
+
+                            option.value = libro.id;
+                            option.text = libro.text;
+
+                            option.dataset.precioVenta = libro.precio;
+                            option.dataset.precioPrestamo = libro.precioPrestamo;
+
+                            option.dataset.stockVenta = libro.stockVenta;
+                            option.dataset.stockPrestamo = libro.stockPrestamo;
+
+                            resultadoSelect.appendChild(option);
+                        });
+
+                        resultadoSelect.selectedIndex = 0;
+
+                        actualizarDatosDesdeSeleccion();
+                    }
+                });
+
             }, 300);
+
         });
 
-        // 2. SELECCIONAR LIBRO (Manual)
+
+        // =============================
+        // EVENT LISTENERS
+        // =============================
         resultadoSelect.addEventListener("change", actualizarDatosDesdeSeleccion);
 
-        // Función auxiliar para no repetir código
-            function actualizarDatosDesdeSeleccion() {
-                 if (resultadoSelect.selectedOptions.length === 0) return;
-                 libroSeleccionado = resultadoSelect.selectedOptions[0];
-                 actualizarPrecio();
-                 actualizarStock();
-                 actualizarSubtotal();
-                validarStockDisponible();
-             }
+        cantidadInput.addEventListener("input", function(){
 
-        // 3. CAMBIAR CANTIDAD
-            cantidadInput.addEventListener("input", function () {
-                  actualizarStock();
-                  actualizarSubtotal();
-              });
+            actualizarStock();
+            actualizarSubtotal();
+        });
 
-        // 4. CAMBIAR TIPO SERVICIO
-        tipoServicioSelect.addEventListener("change", function () {
+        tipoServicioSelect.addEventListener("change", function(){
+
             const tipo = this.value;
-            // "2" es Préstamo en tu HTML
+
             grupoFecha.style.display = (tipo === "2") ? "block" : "none";
+
             actualizarPrecio();
             actualizarStock();
             actualizarSubtotal();
         });
 
-        // FUNCIONES DE CÁLCULO
-            function actualizarStock() {
-
-                if (!libroSeleccionado) return;
-                const tipo = tipoServicioSelect.value;
-                let stockBase = 0;
-                if (tipo === "1")
-                    stockBase = parseInt(libroSeleccionado.dataset.stockVenta) || 0;
-                else
-                    stockBase = parseInt(libroSeleccionado.dataset.stockPrestamo) || 0;
-                const cantidad = parseInt(cantidadInput.value) || 0;
-                cantidadInput.max = stockBase;
-                cantidadInput.disabled = stockBase <= 0;
-                const stockVisual = Math.max(stockBase - cantidad, 0);
-                stockSpan.innerText = stockVisual;
-                validarStockDisponible();
-            }
+        montoPagadoInput.addEventListener("input", validarMontoPagado);
 
 
-            function obtenerPrecioActual() {
-                if (!libroSeleccionado) return 0;
-                const tipo = tipoServicioSelect.value;
-                if (tipo === "2") {
-                    return PRECIO_PRESTAMO;
-                }
-                return parseFloat(libroSeleccionado.dataset.precioVenta) || 0;
-            }
+        // =============================
+        // VALIDAR FORM
+        // =============================
+        document.querySelector("form").addEventListener("submit", function(e){
 
-                function actualizarPrecio() {
-                const precio = obtenerPrecioActual();
-                precioSpan.innerText = precio.toFixed(2);
-            }
+            if(!validarStockDisponible()){
 
-            function actualizarSubtotal() {
-                    if (!validarStockDisponible())
+                e.preventDefault();
+                alert("No hay stock disponible para este servicio.");
+
                 return;
-                if (!libroSeleccionado) return;
-                const precio = obtenerPrecioActual();
-                const cantidad = parseInt(cantidadInput.value) || 0;
-                const subtotal = precio * cantidad;
-                subtotalSpan.innerText = subtotal.toFixed(2);
-
             }
 
-            //BLOQUEAR BOTON SINO HAY STOCK
-                    function validarStockDisponible() {
+            if(!validarMontoPagado()){
 
-                if (!libroSeleccionado) {
-                    btnConfirmar.disabled = true;
-                    return false;
-                }
-                const tipo = tipoServicioSelect.value;
-                let stockBase = 0;
-                if (tipo === "1")
-                    stockBase = parseInt(libroSeleccionado.dataset.stockVenta) || 0;
-                else
-                    stockBase = parseInt(libroSeleccionado.dataset.stockPrestamo) || 0;
-                const cantidad = parseInt(cantidadInput.value) || 0;
+                e.preventDefault();
+                alert("El monto pagado no puede ser mayor que el subtotal.");
 
-                // Caso crítico: no hay stock
-                if (stockBase <= 0) {
-                    stockSpan.innerText = "0";
-                    stockSpan.style.color = "#ff4d4d";
-                    btnConfirmar.disabled = true;
-                    return false;
-                }
-
-                // Caso cantidad mayor al stock
-                if (cantidad > stockBase) {
-                    cantidadInput.value = stockBase;
-                    stockSpan.innerText = "0";
-                    stockSpan.style.color = "#ff4d4d";
-                    btnConfirmar.disabled = true;
-                    return false;
-                }
-
-                // Caso válido
-                btnConfirmar.disabled = false;
-                stockSpan.style.color = "";
-                return true;
+                return;
             }
 
-            document.querySelector("form").addEventListener("submit", function(e){
-                if (!validarStockDisponible()) {
-                    e.preventDefault();
-                    alert("No hay stock disponible para este servicio.");
-                }
-            });
-
+        });
     </script>
 }

@@ -47,12 +47,12 @@ body {
 
 .main-container {
     min-height: 100vh;
-    padding: 40px 20px;
+    padding: 40px 10px;
     background: var(--bg-gradient);
     font-family: 'Segoe UI', Roboto, sans-serif;
     color: var(--text-main);
     display: flex;
-    justify-content: center;
+    justify-content: stretch;
 }
 
 .glass-card {
@@ -62,9 +62,14 @@ body {
     border-radius: 24px;
     width: 100%;
     max-width: 850px;
-    padding: 40px;
+    padding: 13px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
+
+    .glass-card.table-page {
+        max-width: 1400px;
+        width: 95%;
+    }
 
 .form-header {
     text-align: center;
@@ -226,6 +231,7 @@ body {
 /* Extensiones para la Tabla */
 .table-page {
     max-width: 1200px !important; /* Más ancha para la tabla */
+    margin: 0 auto;
 }
 
 .table-header {
@@ -253,6 +259,8 @@ body {
 
 .table-responsive {
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 300px);
 }
 
 .modern-table {
@@ -262,6 +270,11 @@ body {
 }
 
     .modern-table thead th {
+        position: sticky;
+        top: 0;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(8px);
+        z-index: 10;
         color: var(--text-muted);
         font-weight: 600;
         text-transform: uppercase;

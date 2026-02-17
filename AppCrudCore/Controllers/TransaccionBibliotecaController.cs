@@ -46,8 +46,9 @@ namespace AppCrudCore.Controllers
         public async Task<IActionResult> Index()
         {
             var appDBContext = _context.TransaccionBiblioteca
-                .Include(t => t.Cliente)
-                .Include(t => t.Empleado)
+                .Include(t => t.ClienteUsuario)
+        .Include(t => t.EmpleadoUsuario)
+        .Include(t => t.Usuario)
                 .Include(t => t.Detalles)
                 .ThenInclude(d => d.Libro);
             return View(await appDBContext.ToListAsync());
@@ -63,8 +64,8 @@ namespace AppCrudCore.Controllers
             }
 
             var transaccionBiblioteca = await _context.TransaccionBiblioteca
-                .Include(t => t.Cliente)
-                .Include(t => t.Empleado)
+                .Include(t => t.Usuario)
+                //.Include(t => t.Empleado)
                 .FirstOrDefaultAsync(m => m.IdTransaccionBiblioteca == id);
             if (transaccionBiblioteca == null)
             {
@@ -94,6 +95,7 @@ namespace AppCrudCore.Controllers
                     isbn = l.ISBN,
                     precio = l.PrecioVenta,
                     stockVenta = l.StockVenta,
+                    precioPrestamo= l.PrecioPrestamo,
                     stockPrestamo = l.StockPrestamo,
                     stockTotal = l.StockTotal,
                     text = $"{l.Titulo} | ISBN: {l.ISBN} | Sale: {l.StockVenta} | Rent: {l.StockPrestamo}"
@@ -136,8 +138,8 @@ namespace AppCrudCore.Controllers
                 "IdUsuario",
                 "NombreCompleto"
             );
-            
-             CargarViewBag();
+
+            // CargarViewBag();
             return View();
         }
 
@@ -184,7 +186,9 @@ namespace AppCrudCore.Controllers
 
                     TipoServicio = model.TipoServicio,
                     Origen = model.Origen,
-                    Estado = EstadoTransaccion.Completada,
+                    Estado = model.TipoServicio == TipoServicio.Prestamo
+                    ? EstadoTransaccion.Prestado
+                    : EstadoTransaccion.Vendido,
                     TipoPago = model.TipoPago,
 
                     FechaCreacion = DateTime.Now,
@@ -208,7 +212,7 @@ namespace AppCrudCore.Controllers
 
                     decimal precioUnitario =
                         model.TipoServicio == TipoServicio.Prestamo
-                        ? 500
+                        ? libro.PrecioPrestamo
                         : libro.PrecioVenta;
 
                     if (model.TipoServicio == TipoServicio.Venta)
@@ -217,6 +221,7 @@ namespace AppCrudCore.Controllers
                             throw new Exception($"Stock insuficiente: {libro.Titulo}");
 
                         libro.StockVenta -= item.Cantidad;
+                        libro.StockTotal -= item.Cantidad;
                     }
                     else
                     {
@@ -257,6 +262,68 @@ namespace AppCrudCore.Controllers
                 ModelState.AddModelError("", error);
 
                 await CargarViewBag();
+                return View(model);
+            }
+        }
+
+
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var transaccion = await _context.TransaccionBiblioteca
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.IdTransaccionBiblioteca == id);
+
+            if (transaccion == null)
+                return NotFound();
+
+            var model = new TransaccionBibliotecaEditViewModel
+            {
+                IdTransaccionBiblioteca = transaccion.IdTransaccionBiblioteca,
+                Estado = transaccion.Estado,
+                FechaDevolucion = transaccion.FechaDevolucion,
+                Observaciones = transaccion.Observaciones
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(TransaccionBibliotecaEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var transaccion = await _context.TransaccionBiblioteca
+                .FirstOrDefaultAsync(x => x.IdTransaccionBiblioteca == model.IdTransaccionBiblioteca);
+
+            if (transaccion == null)
+                return NotFound();
+
+            try
+            {
+                // reglas de negocio opcionales
+                if (transaccion.Estado == EstadoTransaccion.Cancelado)
+                {
+                    ModelState.AddModelError("", "No se puede editar una transacción cancelada.");
+                    return View(model);
+                }
+
+                transaccion.Estado = model.Estado;
+                transaccion.FechaDevolucion = model.FechaDevolucion;
+                transaccion.Observaciones = model.Observaciones;
+
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
                 return View(model);
             }
         }

@@ -12,22 +12,23 @@ namespace AppCrudCore.Models
         public string NumeroTransaccion { get; set; }
 
         [Required]
-        public int ClienteId { get; set; } //FK A TABLA CLIENTE (NO SE VA USAR EN UN FUTURO)
-        public Cliente Cliente { get; set; }
+       // public int ClienteId { get; set; } //FK A TABLA CLIENTE (NO SE VA USAR EN UN FUTURO)
+       // public Cliente Cliente { get; set; }
 
-        public int? EmpleadoId { get; set; } //FK A TABLA EMPLEADO (NO SE VA USAR EN UN FUTURO)
-        public Empleado? Empleado { get; set; }
+       // public int? EmpleadoId { get; set; } //FK A TABLA EMPLEADO (NO SE VA USAR EN UN FUTURO)
+       // public Empleado? Empleado { get; set; }
 
-        public int? UsuarioId { get; set; } //FK A TABLA USUARIO
+
+        public int UsuarioId { get; set; } //FK A TABLA USUARIO
         public Usuario Usuario { get; set; }
 
 
         // quien compra
-        public int? ClienteUsuarioId { get; set; } //FK AUTOREFERENCIA
+        public int ClienteUsuarioId { get; set; } //FK AUTOREFERENCIA
         public Usuario ClienteUsuario { get; set; }
 
         // quien atendió
-        public int? EmpleadoUsuarioId { get; set; } //FK AUTORREFERENCIA
+        public int EmpleadoUsuarioId { get; set; } //FK AUTORREFERENCIA
         public Usuario EmpleadoUsuario { get; set; }
 
 

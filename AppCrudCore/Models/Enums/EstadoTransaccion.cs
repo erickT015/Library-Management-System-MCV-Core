@@ -2,8 +2,9 @@
 {
     public enum EstadoTransaccion
     {
-        Pendiente=1,
-        Completada=2,
-        Cancelada=3
+        Bodega = 1,
+        Prestado = 2,
+        Vendido = 3,
+        Cancelado = 4
     }
 }

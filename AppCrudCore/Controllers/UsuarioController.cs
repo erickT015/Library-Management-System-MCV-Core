@@ -1,6 +1,5 @@
 ﻿using AppCrudCore.Data;
 using AppCrudCore.Models;
-using AppCrudCore.Models.ViewModels.Empleado;
 using AppCrudCore.Models.ViewModels.Usuario;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

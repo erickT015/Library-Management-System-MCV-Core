@@ -10,11 +10,8 @@ namespace AppCrudCore.Data
         {
 
         }
-
-        public DbSet<Empleado> Empleados { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Rol> Rol { get; set; }
-        public DbSet<Cliente> Cliente { get; set; }
         public DbSet<Libro> Libro { get; set; }
         public DbSet<Categoria> Categoria { get; set; }
         public DbSet<TransaccionBiblioteca> TransaccionBiblioteca { get; set; }
@@ -23,35 +20,6 @@ namespace AppCrudCore.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            //==PROPIEDADES DE LA TABLA EMPLEADO
-            modelBuilder.Entity<Empleado>(tb =>
-            {
-                //propiedades para columna "col" idEmpleado
-                tb.HasKey(col => col.IdEmpleado); //es primary
-                tb.Property(col => col.IdEmpleado)
-                .UseIdentityColumn() //incremental (1,1)
-                .ValueGeneratedOnAdd(); //no envies valor, la db lo gesyiona
-
-                tb.Property(col => col.Cedula)
-                .IsRequired()
-                .HasMaxLength(20);
-                tb.HasIndex(col => col.Cedula).IsUnique();
-
-                tb.Property(col => col.NombreCompleto).HasMaxLength(50);
-
-                tb.Property(col => col.Correo).HasMaxLength(50);
-
-                tb.Property(col => col.PasswordHash)
-                .IsRequired() //no nulo
-                .HasMaxLength(255); //tamaño de 255
-
-                tb.HasOne(col => col.Rol)
-                .WithMany() //se relacinoa con muchos
-                .HasForeignKey(col => col.RolId);
-            });
-
-            modelBuilder.Entity<Empleado>().ToTable("Empleado"); //le asignamos el nombre, a la fuerza no por convencion
 
             //==PROPIEDADES DE LA TABLA ROL
             modelBuilder.Entity<Rol>(tb =>
@@ -101,24 +69,6 @@ namespace AppCrudCore.Data
                     }
                 );
 
-            });
-
-            //==PROPIEDADES DE LA TABLA CLIENTE
-            modelBuilder.Entity<Cliente>(tb =>
-            {
-                //propiedaes para columnas
-                tb.HasKey(col => col.IdCliente);
-                tb.Property(col => col.IdCliente)
-               .UseIdentityColumn() //incremental (1,1)
-               .ValueGeneratedOnAdd(); //no envies valor, la db lo gesyiona
-
-                tb.HasIndex(col => col.Cedula).IsUnique();
-
-                tb.HasOne(col => col.Rol)
-                .WithMany()
-                .HasForeignKey(col => col.RolId);
-
-                tb.HasIndex(col => col.Correo).IsUnique();
             });
 
             //==PROPIEDADES DE LA TABLA LIBRO
@@ -232,7 +182,7 @@ namespace AppCrudCore.Data
 
                 tb.Property(col => col.FechaCompletada).IsRequired(false);
 
-                //LLaves foraneas
+                /*LLaves foraneas
                 tb.HasOne(col => col.Cliente)//FK
                .WithMany()
                .HasForeignKey(col => col.ClienteId)
@@ -242,7 +192,7 @@ namespace AppCrudCore.Data
                 tb.HasOne(col => col.Empleado)//FK
                 .WithMany()
                 .HasForeignKey(col => col.EmpleadoId)
-                 .OnDelete(DeleteBehavior.Restrict);
+                 .OnDelete(DeleteBehavior.Restrict);*/
 
                 // FK Usuario (usuario general asociado a la transacción)
                 tb.HasOne(col => col.Usuario)

@@ -4,6 +4,7 @@ using AppCrudCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppCrudCore.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260217070418_RemoverEmpleadoClienteFK")]
+    partial class RemoverEmpleadoClienteFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,6 +99,115 @@ namespace AppCrudCore.Migrations
                             Activo = true,
                             Nombre = "Infantil"
                         });
+                });
+
+            modelBuilder.Entity("AppCrudCore.Models.Cliente", b =>
+                {
+                    b.Property<int>("IdCliente")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCliente"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Cedula")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Correo")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NombreCompleto")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PasswordTemp")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("RolId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("IdCliente");
+
+                    b.HasIndex("Cedula")
+                        .IsUnique();
+
+                    b.HasIndex("Correo")
+                        .IsUnique();
+
+                    b.HasIndex("RolId");
+
+                    b.ToTable("Cliente");
+                });
+
+            modelBuilder.Entity("AppCrudCore.Models.Empleado", b =>
+                {
+                    b.Property<int>("IdEmpleado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEmpleado"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Cedula")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Correo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateOnly>("FechaContrato")
+                        .HasColumnType("date");
+
+                    b.Property<string>("NombreCompleto")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("RolId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdEmpleado");
+
+                    b.HasIndex("Cedula")
+                        .IsUnique();
+
+                    b.HasIndex("RolId");
+
+                    b.ToTable("Empleado", (string)null);
                 });
 
             modelBuilder.Entity("AppCrudCore.Models.Libro", b =>
@@ -394,6 +506,26 @@ namespace AppCrudCore.Migrations
                     b.HasIndex("RolId");
 
                     b.ToTable("Usuario");
+                });
+
+            modelBuilder.Entity("AppCrudCore.Models.Cliente", b =>
+                {
+                    b.HasOne("AppCrudCore.Models.Rol", "Rol")
+                        .WithMany()
+                        .HasForeignKey("RolId");
+
+                    b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("AppCrudCore.Models.Empleado", b =>
+                {
+                    b.HasOne("AppCrudCore.Models.Rol", "Rol")
+                        .WithMany()
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Rol");
                 });
 
             modelBuilder.Entity("AppCrudCore.Models.Libro", b =>
