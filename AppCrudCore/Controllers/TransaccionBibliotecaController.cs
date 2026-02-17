@@ -21,6 +21,27 @@ namespace AppCrudCore.Controllers
             _context = context;
         }
 
+        private async Task CargarViewBag()
+        {
+            ViewBag.Clientes = new SelectList(
+                await _context.Usuario
+                    .Where(u => u.Activo && u.Rol.Nombre == "Cliente")
+                    .ToListAsync(),
+                "IdUsuario",
+                "NombreCompleto"
+            );
+
+            ViewBag.Empleados = new SelectList(
+                await _context.Usuario
+                    .Where(u => u.Activo &&
+                        (u.Rol.Nombre == "Empleado" || u.Rol.Nombre == "Admin"))
+                    .ToListAsync(),
+                "IdUsuario",
+                "NombreCompleto"
+            );
+        }
+
+
         // GET: TransaccionBiblioteca
         public async Task<IActionResult> Index()
         {
@@ -86,7 +107,7 @@ namespace AppCrudCore.Controllers
         //GET
         public IActionResult Create()
         {
-            ViewBag.Cliente = new SelectList(
+            /*ViewBag.Cliente = new SelectList(
                 _context.Cliente.Where(c => c.Activo),
                 "IdCliente",
                 "NombreCompleto"
@@ -96,8 +117,27 @@ namespace AppCrudCore.Controllers
                 _context.Empleados.Where(e => e.Activo),
                 "IdEmpleado",
                 "NombreCompleto"
-            );
+            );*/
 
+            ViewBag.Clientes = new SelectList(
+        _context.Usuario
+            .Where(u => u.Activo && u.Rol.Nombre == "Cliente")
+            .OrderBy(u => u.NombreCompleto)
+            .ToList(),
+        "IdUsuario",
+        "NombreCompleto"
+    );
+
+            ViewBag.Empleados = new SelectList(
+                _context.Usuario
+                    .Where(u => u.Activo && (u.Rol.Nombre == "Empleado" || u.Rol.Nombre == "Admin"))
+                    .OrderBy(u => u.NombreCompleto)
+                    .ToList(),
+                "IdUsuario",
+                "NombreCompleto"
+            );
+            
+             CargarViewBag();
             return View();
         }
 
@@ -123,6 +163,7 @@ namespace AppCrudCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TransaccionBibliotecaCreateViewModel model)
         {
+            await CargarViewBag();
             if (!ModelState.IsValid)
                 return View(model);
 
@@ -134,24 +175,25 @@ namespace AppCrudCore.Controllers
                 {
                     NumeroTransaccion = await GenerarNumeroTransaccion(),
 
-                    ClienteId = model.ClienteId,
-                    EmpleadoId = model.EmpleadoId,
+                    ClienteUsuarioId = model.ClienteUsuarioId,
+
+                    EmpleadoUsuarioId = model.EmpleadoUsuarioId,
+
+                    // Usuario que creó el registro (temporal)
+                    UsuarioId = model.EmpleadoUsuarioId,
 
                     TipoServicio = model.TipoServicio,
                     Origen = model.Origen,
-
                     Estado = EstadoTransaccion.Completada,
-
                     TipoPago = model.TipoPago,
 
                     FechaCreacion = DateTime.Now,
 
                     FechaDevolucion = model.TipoServicio == TipoServicio.Prestamo
-         ? model.FechaDevolucion
-         : null,
+                        ? model.FechaDevolucion
+                        : null,
 
                     ReferenciaPago = model.ReferenciaPago,
-
                     Observaciones = model.Observaciones
                 };
 
@@ -162,46 +204,43 @@ namespace AppCrudCore.Controllers
                     var libro = await _context.Libro.FindAsync(item.LibroId);
 
                     if (libro == null)
-                        throw new Exception("Libro no encontrado");
+                        throw new Exception("Libro no existe");
+
+                    decimal precioUnitario =
+                        model.TipoServicio == TipoServicio.Prestamo
+                        ? 500
+                        : libro.PrecioVenta;
 
                     if (model.TipoServicio == TipoServicio.Venta)
                     {
                         if (libro.StockVenta < item.Cantidad)
-                            throw new Exception($"Stock de venta insuficiente para {libro.Titulo}");
+                            throw new Exception($"Stock insuficiente: {libro.Titulo}");
 
                         libro.StockVenta -= item.Cantidad;
                     }
                     else
                     {
                         if (libro.StockPrestamo < item.Cantidad)
-                            throw new Exception($"Stock de préstamo insuficiente para {libro.Titulo}");
+                            throw new Exception($"Stock préstamo insuficiente: {libro.Titulo}");
 
                         libro.StockPrestamo -= item.Cantidad;
                     }
 
-                    decimal precioUnitario =
-        model.TipoServicio == TipoServicio.Prestamo
-        ? 500
-        : libro.PrecioVenta;
-
                     var subtotal = precioUnitario * item.Cantidad;
 
-                    var detalle = new TransaccionDetalle
+                    transaccion.Detalles.Add(new TransaccionDetalle
                     {
-                        LibroId = libro.IdLibro,
+                        LibroId = item.LibroId,
                         Cantidad = item.Cantidad,
                         PrecioUnitario = precioUnitario,
                         Subtotal = subtotal
-                    };
+                    });
 
                     total += subtotal;
-
-                    transaccion.Detalles.Add(detalle);
                 }
 
                 transaccion.Total = total;
-                transaccion.MontoPagado = total;
-
+                transaccion.MontoPagado = model.MontoPagado;
 
                 _context.TransaccionBiblioteca.Add(transaccion);
 
@@ -217,6 +256,7 @@ namespace AppCrudCore.Controllers
                 var error = ex.InnerException?.Message ?? ex.Message;
                 ModelState.AddModelError("", error);
 
+                await CargarViewBag();
                 return View(model);
             }
         }

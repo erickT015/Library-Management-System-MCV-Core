@@ -6,10 +6,18 @@ namespace AppCrudCore.Models.ViewModels.TransaccionBiblioteca
 {
     public class TransaccionBibliotecaCreateViewModel
     {
-    [Required]
-        public int ClienteId { get; set; }
+        //[Required]
+        //public int ClienteId { get; set; } TABLA VIEJA FK
 
-        public int? EmpleadoId { get; set; }
+        //public int? EmpleadoId { get; set; } TATBLA VIEJA FK
+
+        [Required]
+        public int ClienteUsuarioId { get; set; }
+
+        [Required]
+        public int EmpleadoUsuarioId { get; set; }
+
+
 
         [Required]
         public TipoServicio TipoServicio { get; set; }

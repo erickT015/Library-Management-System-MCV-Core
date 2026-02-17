@@ -1,0 +1,68 @@
+﻿@model AppCrudCore.Models.ViewModels.Login.LoginViewModel
+
+<div class="main-wrapper">
+    <div class="glass-login-card">
+        <div class="brand-section">
+            <div class="logo-circle"></div>
+            <h1>Bienvenido</h1>
+            <p>Ingresa a tu cuenta para continuar</p>
+        </div>
+
+        <form asp-action="Login" method="post" class="modern-form">
+            <div class="floating-group">
+                <input asp-for="Correo" class="modern-input" placeholder=" " required />
+                <label asp-for="Correo">Correo Electrónico</label>
+                <div class="input-bar"></div>
+                <span asp-validation-for="Correo" class="validation-text"></span>
+            </div>
+
+            <div class="floating-group">
+                <input asp-for="Password" type="password" class="modern-input" placeholder=" " required />
+                <label asp-for="Password">Contraseña</label>
+                <div class="input-bar"></div>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="primary-submit">
+                <span>INICIAR SESIÓN</span>
+            </button>
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </form>
+
+        <div class="extra-actions">
+            <button class="forgot-link" data-bs-toggle="modal" data-bs-target="#forgotModal">
+                ¿Olvidaste tu contraseña?
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="forgotModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <form asp-action="ForgotPassword" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white">Recuperar Acceso</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: #cbd5e1; font-size: 0.9rem;">Escribe tu correo y te enviaremos instrucciones.</p>
+                    <div class="floating-group">
+                        <input name="Correo" class="modern-input" placeholder=" " required />
+                        <label>Correo electrónico</label>
+                        <div class="input-bar"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="primary-submit" style="width: auto; padding: 10px 30px;">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

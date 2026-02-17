@@ -446,3 +446,180 @@ body {
 .text-danger {
     color: #ef4444;
 }
+
+/*===== LOGIN ====*/
+/* Contenedor principal con fondo animado */
+.main-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #1e1b4b);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    padding: 20px;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Tarjeta con Efecto Cristal */
+.glass-login-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 50px 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    animation: cardEntrance 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Encabezado */
+.brand-section h1 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.brand-section p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin-bottom: 35px;
+}
+
+/* Inputs Animados */
+.floating-group {
+    position: relative;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.modern-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 0;
+    color: #ffffff;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.floating-group label {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    color: #94a3b8;
+    pointer-events: none;
+    transition: 0.3s all ease;
+}
+
+/* Efecto al enfocar o tener texto */
+.modern-input:focus ~ label,
+.modern-input:not(:placeholder-shown) ~ label {
+    top: -18px;
+    font-size: 0.8rem;
+    color: #818cf8; /* Color acento */
+    font-weight: 600;
+}
+
+.input-bar {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #818cf8;
+    transition: 0.4s all ease;
+}
+
+.modern-input:focus ~ .input-bar {
+    width: 100%;
+    left: 0;
+}
+
+/* Botón de Acción */
+.primary-submit {
+    width: 100%;
+    background: #ffffff;
+    color: #0f172a;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+    .primary-submit:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.2);
+    }
+
+    .primary-submit:active {
+        transform: translateY(0);
+    }
+
+/* Enlaces */
+.forgot-link {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-top: 25px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+    .forgot-link:hover {
+        color: #ffffff;
+    }
+
+/* Estilo del Modal */
+.glass-modal {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.validation-text {
+    color: #fb7185;
+    font-size: 0.75rem;
+    margin-top: 5px;
+    display: block;
+}

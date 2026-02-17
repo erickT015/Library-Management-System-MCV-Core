@@ -19,14 +19,14 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <label class="field-label">Cliente</label>
-                        <select asp-for="ClienteId" asp-items="ViewBag.Cliente" class="custom-select"></select>
-                        <span asp-validation-for="ClienteId" class="error-text"></span>
+                        <select asp-for="ClienteUsuarioId" asp-items="ViewBag.Clientes" class="custom-select"></select>
+                        <span asp-validation-for="ClienteUsuarioId" class="error-text"></span>
                     </div>
 
                     <div class="input-group">
                         <label class="field-label">Empleado</label>
-                        <select asp-for="EmpleadoId" asp-items="ViewBag.Empleados" class="custom-select"></select>
-                        <span asp-validation-for="EmpleadoId" class="error-text"></span>
+                        <select asp-for="EmpleadoUsuarioId" asp-items="ViewBag.Empleados" class="custom-select"></select>
+                        <span asp-validation-for="EmpleadoUsuarioId" class="error-text"></span>
                     </div>
 
                     <div class="input-group">
