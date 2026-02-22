@@ -1,0 +1,51 @@
+﻿@model AppCrudCore.Models.ViewModels.Profile.ProfileEditViewModel
+
+<div class="profile-container">
+
+    <form asp-action="Edit" method="post" class="profile-card">
+
+        <h2>Editar Perfil</h2>
+
+        <div class="form-group">
+            <label>Nombre completo</label>
+            <input asp-for="NombreCompleto" class="input" />
+            <span asp-validation-for="NombreCompleto"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Teléfono</label>
+            <input asp-for="Telefono" class="input" />
+        </div>
+
+        <div class="form-group">
+            <label>Dirección</label>
+            <input asp-for="Direccion" class="input" />
+        </div>
+
+        <hr />
+
+        <h4>Cambiar contraseña</h4>
+
+        <div class="form-group">
+            <label>Nueva contraseña</label>
+            <input asp-for="NuevaPassword" type="password" class="input" />
+        </div>
+
+        <div class="form-group">
+            <label>Confirmar contraseña</label>
+            <input asp-for="ConfirmarPassword" type="password" class="input" />
+        </div>
+
+        <div class="profile-actions">
+            <button type="submit" class="btn-primary">
+                Guardar Cambios
+            </button>
+
+            <a asp-action="Index" class="btn-secondary">
+                Cancelar
+            </a>
+        </div>
+
+    </form>
+
+</div>

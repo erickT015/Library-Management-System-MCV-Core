@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppCrudCore.Models.ViewModels.Login
+namespace AppCrudCore.Models.ViewModels.Account
 {
     public class LoginViewModel
     {

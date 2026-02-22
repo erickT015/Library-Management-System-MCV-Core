@@ -1,4 +1,4 @@
-﻿@model AppCrudCore.Models.ViewModels.Login.LoginViewModel
+﻿@model AppCrudCore.Models.ViewModels.Account.LoginViewModel
 
 <div class="main-wrapper">
     <div class="glass-login-card">
@@ -33,6 +33,7 @@
             <button class="forgot-link" data-bs-toggle="modal" data-bs-target="#forgotModal">
                 ¿Olvidaste tu contraseña?
             </button>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-success mb-3">Crear cuenta</a>
         </div>
     </div>
 </div>

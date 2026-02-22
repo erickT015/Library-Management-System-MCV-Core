@@ -1,0 +1,94 @@
+﻿@model AppCrudCore.Models.ViewModels.Account.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<section class="main-container">
+    <div class="glass-card">
+        <header class="form-header">
+            <h1 class="title">Crear Usuario</h1>
+            <p class="subtitle">Cree su usuario para poder comprar en la biblioteca</p>
+        </header>
+        <div class="form-wrapper">
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="field-label">Nombre completo</label>
+                        <input asp-for="NombreCompleto" class="custom-input" />
+                        <span asp-validation-for="NombreCompleto" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <label class="field-label">Correo electrónico</label>
+                        <input asp-for="Correo" class="custom-input" />
+                        <span asp-validation-for="Correo" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Teléfono</label>
+                        <input asp-for="Telefono" class="custom-input" />
+                        <span asp-validation-for="Telefono" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Dirección</label>
+                        <input asp-for="Direccion" class="custom-input" />
+                        <span asp-validation-for="Direccion" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Contraseña</label>
+                        <input asp-for="Password" class="custom-input" type="password" autocomplete="new-password" id="Password" />
+                        <button class="toggle-input" type="button" onclick="togglePassword('Password', this)"><i class="bi bi-eye"></i></button>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Confirmar Contraseña</label>
+                        <input asp-for="ConfirmPassword" class="custom-input" type="password" autocomplete="new-password" id="ConfirmPassword" />
+                        <button class="toggle-input" type="button" onclick="togglePassword('ConfirmPassword', this)"><i class="bi bi-eye"></i></button>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Cédula</label>
+                        <input asp-for="Cedula" class="custom-input" />
+                        <span asp-validation-for="Cedula" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="separator"></div>
+                <div class="actions">
+                    <button type="submit">Crear Cuenta</button>
+                   
+                </div>
+            </form>
+        </div>
+        <div>
+            <a asp-action="Login">Back to List</a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector("i");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    }
+</script>

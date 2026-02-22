@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AppCrudCore.Data;
 using AppCrudCore.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppCrudCore.Controllers
 {
+
+    [Authorize]
     public class LibroController : Controller
     {
         private readonly AppDBContext _context;

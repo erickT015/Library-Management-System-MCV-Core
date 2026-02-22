@@ -1,6 +1,7 @@
 ﻿using AppCrudCore.Data;
 using AppCrudCore.Models;
 using AppCrudCore.Models.ViewModels.Usuario;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace AppCrudCore.Controllers
 {
+    //[Authorize]
     public class UsuarioController : Controller
     {
         private readonly AppDBContext _context;
