@@ -68,7 +68,7 @@ namespace AppCrudCore.Controllers
                 );
 
                 // empleado sistema
-                const int EMPLEADO_WEB_ID = 5;
+                const int EMPLEADO_WEB_ID = 1;
 
                 ViewBag.Empleados = new SelectList(
                     await _context.Usuario
@@ -141,11 +141,15 @@ namespace AppCrudCore.Controllers
                 .Include(t => t.Usuario)
                 .Include(t => t.Detalles)
                     .ThenInclude(d => d.Libro)
+                    .AsNoTracking()
                 .AsQueryable();
 
             // =========================
             // CLIENTE SOLO SUS DATOS
             // =========================
+            //ordenamiento
+            query = query.OrderByDescending(t => t.IdTransaccionBiblioteca);
+
             if (User.IsInRole("Cliente"))
                 query = query.Where(t =>
                     t.ClienteUsuarioId == userId);
@@ -212,6 +216,7 @@ namespace AppCrudCore.Controllers
 
 
         //metodo generico para crear select list de enums
+        [Authorize]
         private SelectList CrearEnumSelectList<T>(int? selected)
     where T : Enum
         {
@@ -239,13 +244,27 @@ namespace AppCrudCore.Controllers
                 return NotFound();
             }
 
-            var transaccionBiblioteca = await _context.TransaccionBiblioteca
-                .Include(t => t.Usuario)
-                .Include(t => t.ClienteUsuario)
-                .Include(t => t.EmpleadoUsuario)
-                .Include(t => t.Detalles)
-                    .ThenInclude(l => l.Libro)
-                .FirstOrDefaultAsync(m => m.IdTransaccionBiblioteca == id);
+            int usuarioId = int.Parse(
+    User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var query = _context.TransaccionBiblioteca
+        .Include(t => t.Usuario)
+        .Include(t => t.ClienteUsuario)
+        .Include(t => t.EmpleadoUsuario)
+        .Include(t => t.Detalles)
+            .ThenInclude(l => l.Libro)
+        .AsQueryable();
+
+            if (User.IsInRole("Cliente"))
+            {
+                query = query.Where(t =>
+                    t.ClienteUsuarioId == usuarioId);
+            }
+
+            var transaccionBiblioteca =
+        await query.FirstOrDefaultAsync(
+            m => m.IdTransaccionBiblioteca == id);
+
             if (transaccionBiblioteca == null)
             {
                 return NotFound();
@@ -257,6 +276,7 @@ namespace AppCrudCore.Controllers
 
         // GET: Funcion de busqueda por debounce
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> BuscarLibros(string term)
         {
             if (string.IsNullOrWhiteSpace(term))
@@ -277,7 +297,7 @@ namespace AppCrudCore.Controllers
                     precioPrestamo = l.PrecioPrestamo,
                     stockPrestamo = l.StockPrestamo,
                     stockTotal = l.StockTotal,
-                    text = $"{l.Titulo} | ISBN: {l.ISBN} | Sale: {l.StockVenta} | Rent: {l.StockPrestamo}"
+                    text = $"{l.Titulo} | ISBN: {l.ISBN} | Venta: {l.StockVenta} | Préstamo: {l.StockPrestamo}"
                 })
                 .ToListAsync();
 
@@ -314,13 +334,12 @@ namespace AppCrudCore.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Create(
-            TransaccionBibliotecaCreateViewModel model)
+        public async Task<IActionResult> Create(TransaccionBibliotecaCreateViewModel model)
         {
             await CargarUsuariosSegunRol();
 
             if (!ModelState.IsValid)
-            return View(model);     
+                return View(model);
 
             // VALIDAR DETALLES
             if (model.Detalles == null || !model.Detalles.Any())
@@ -343,6 +362,28 @@ namespace AppCrudCore.Controllers
                 return View(model);
             }
 
+            // VALIDAR FECHA DEVOLUCION
+            if (model.TipoServicio == TipoServicio.Prestamo)
+            {
+                if (!model.FechaDevolucion.HasValue)
+                {
+                    ModelState.AddModelError(
+                        nameof(model.FechaDevolucion),
+                        "Debe indicar una fecha de devolución.");
+
+                    return View(model);
+                }
+
+                if (model.FechaDevolucion.Value.Date <= DateTime.Today)
+                {
+                    ModelState.AddModelError(
+                        nameof(model.FechaDevolucion),
+                        "La fecha de devolución debe ser posterior a hoy.");
+
+                    return View(model);
+                }
+            }
+
             using var dbTransaction =
                 await _context.Database.BeginTransactionAsync();
 
@@ -358,6 +399,8 @@ namespace AppCrudCore.Controllers
                     TipoPago = model.TipoPago,
 
                     FechaCreacion = DateTime.Now,
+
+
 
                     FechaDevolucion =
                         model.TipoServicio == TipoServicio.Prestamo
@@ -401,6 +444,8 @@ namespace AppCrudCore.Controllers
                         usuarioLogueado;
                 }
 
+                
+
                 decimal total = 0;
                 // DETALLES MULTILIBRO
                 foreach (var item in model.Detalles)
@@ -417,23 +462,13 @@ namespace AppCrudCore.Controllers
                         ? libro.PrecioPrestamo
                         : libro.PrecioVenta;
 
-                    // VALIDAR STOCK
                     if (model.TipoServicio == TipoServicio.Venta)
                     {
-                        if (libro.StockVenta < item.Cantidad)
-                            throw new Exception(
-                                $"Stock insuficiente: {libro.Titulo}");
-
-                        libro.StockVenta -= item.Cantidad;
-                        libro.StockTotal -= item.Cantidad;
+                        libro.ReducirStockVenta(item.Cantidad);
                     }
                     else
                     {
-                        if (libro.StockPrestamo < item.Cantidad)
-                            throw new Exception(
-                                $"Stock préstamo insuficiente: {libro.Titulo}");
-
-                        libro.StockPrestamo -= item.Cantidad;
+                        libro.ReducirStockPrestamo(item.Cantidad);
                     }
 
                     var subtotal =
@@ -451,11 +486,14 @@ namespace AppCrudCore.Controllers
                     total += subtotal;
                 }
 
+
                 // TOTALES
                 transaccion.Total = total;
                 transaccion.MontoPagado = model.MontoPagado;
                 if (transaccion.MontoPagado < transaccion.Total)
                     throw new Exception("Pago insuficiente.");
+
+
 
                 _context.TransaccionBiblioteca.Add(transaccion);
 
@@ -486,18 +524,35 @@ namespace AppCrudCore.Controllers
                 return NotFound();
 
             var transaccion = await _context.TransaccionBiblioteca
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.IdTransaccionBiblioteca == id);
+         .Include(t => t.Detalles)
+             .ThenInclude(d => d.Libro)
+         .AsNoTracking()
+         .FirstOrDefaultAsync(x =>
+             x.IdTransaccionBiblioteca == id);
 
             if (transaccion == null)
                 return NotFound();
+
+            if (!User.IsInRole("Admin") &&
+                transaccion.Estado == EstadoTransaccion.Cancelado)
+            {
+                TempData["ModalTitle"] = "Operación no permitida";
+
+                TempData["ModalMessage"] =   "La transacción está cancelada y no puede modificarse.";
+
+               // return RedirectToAction("Error", "Home");
+                 return RedirectToAction(nameof(Index));
+            }
+
 
             var model = new TransaccionBibliotecaEditViewModel
             {
                 IdTransaccionBiblioteca = transaccion.IdTransaccionBiblioteca,
                 Estado = transaccion.Estado,
                 FechaDevolucion = transaccion.FechaDevolucion,
-                Observaciones = transaccion.Observaciones
+                FechaCreacion = transaccion.FechaCreacion,
+                Observaciones = transaccion.Observaciones,
+                Detalles = transaccion.Detalles
             };
 
             return View(model);
@@ -514,17 +569,44 @@ namespace AppCrudCore.Controllers
                 return View(model);
 
             var transaccion = await _context.TransaccionBiblioteca
-                .FirstOrDefaultAsync(x => x.IdTransaccionBiblioteca == model.IdTransaccionBiblioteca);
+     .Include(t => t.Detalles)
+         .ThenInclude(d => d.Libro)
+     .FirstOrDefaultAsync(x =>
+         x.IdTransaccionBiblioteca ==
+         model.IdTransaccionBiblioteca);
 
             if (transaccion == null)
                 return NotFound();
 
             try
             {
-                if (transaccion.Estado == EstadoTransaccion.Cancelado)
+                if (!User.IsInRole("Admin") &&
+     transaccion.Estado == EstadoTransaccion.Cancelado)
                 {
-                    ModelState.AddModelError("", "No se puede editar una transacción cancelada.");
-                    return View(model);
+                    TempData["ModalTitle"] = "Operación no permitida";
+
+                    TempData["ModalMessage"] =    "La transacción está cancelada y no puede modificarse.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if(transaccion.FechaCreacion>=model.FechaDevolucion)
+                {
+                    TempData["ModalTitle"] = "Operación no permitida";
+                     TempData["ModalMessage"] = "La Fecha de devolución debe ser porterior a la de creación";
+                     return RedirectToAction(nameof(Index));
+                }
+
+                
+
+                // DEVOLUCIÓN DE STOCK
+                if (transaccion.Estado != EstadoTransaccion.Devuelto
+                    && model.Estado == EstadoTransaccion.Devuelto)
+                {
+                    foreach (var detalle in transaccion.Detalles)
+                    {
+                        detalle.Libro.DevolverPrestamo(  detalle.Cantidad);
+                    }
                 }
 
                 transaccion.Estado = model.Estado;

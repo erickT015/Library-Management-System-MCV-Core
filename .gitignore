@@ -10,6 +10,10 @@ obj/
 # Logs
 *.log
 
+# Ignore uploaded book images
+wwwroot/images/libros/*
+!wwwroot/images/libros/.gitkeep
+
 # App settings locales
 appsettings.json
 appsettings.Development.json

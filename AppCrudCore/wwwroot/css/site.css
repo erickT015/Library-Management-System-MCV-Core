@@ -492,31 +492,37 @@ body {
 }
 
 /*===== LOGIN ====*/
-/* Contenedor principal con fondo animado */
 .main-wrapper {
-    min-height: 100vh;
+    background-image: url('/images/fondo/fondo-login.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     display: flex;
-    align-items: center;
     justify-content: center;
-    background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #1e1b4b);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-    padding: 20px;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
 
-    50% {
-        background-position: 100% 50%;
-    }
 
-    100% {
-        background-position: 0% 50%;
+
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
     }
-}
 
 /* Tarjeta con Efecto Cristal */
 .glass-login-card {
@@ -1025,3 +1031,155 @@ body {
         transform: translateX(-50%);
     }
 }
+
+
+/* ===========================
+   SYSTEM ERROR PAGE
+=========================== */
+
+.system-error-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--bg-gradient);
+    color: var(--text-main);
+    animation: fadeIn .6s ease;
+}
+
+.error-content {
+    max-width: 650px;
+    padding: 40px;
+}
+
+/* X grande */
+
+.error-symbol {
+    font-size: 90px;
+    color: #ef4444;
+    margin-bottom: 25px;
+    text-shadow: 0 0 25px rgba(239,68,68,.5);
+}
+
+/* TITULO */
+
+.error-title {
+    font-size: 2.3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+/* MENSAJES */
+
+.error-message {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.error-sub {
+    color: #94a3b8;
+    margin-bottom: 25px;
+}
+
+/* TRACE */
+
+.error-trace {
+    margin-bottom: 30px;
+    font-size: .85rem;
+    opacity: .7;
+}
+
+    .error-trace span {
+        color: #f87171;
+        font-weight: 600;
+    }
+
+/* BOTONES */
+
+.error-actions {
+    margin-top: 20px;
+}
+
+/* ===============================
+   SYSTEM MODAL GLOBAL
+================================*/
+
+.error-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15,23,42,.75);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999999;
+}
+
+/* MODAL */
+
+.error-modal {
+    width: 380px;
+    max-width: 90%;
+    padding: 40px 30px;
+    border-radius: 22px;
+    background: rgba(30,41,59,.96);
+    border: 1px solid rgba(255,255,255,.08);
+    text-align: center;
+    color: white;
+    box-shadow: 0 30px 80px rgba(0,0,0,.8), 0 0 45px rgba(239,68,68,.25);
+    animation: modalPop .35s ease;
+}
+
+/* ICON */
+
+.error-x {
+    width: 75px;
+    height: 75px;
+    margin: auto;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    background: rgba(239,68,68,.15);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: bold;
+    box-shadow: 0 0 30px rgba(239,68,68,.6);
+    animation: pulseError 2s infinite;
+}
+
+/* TEXT */
+
+.error-modal h2 {
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.error-modal p {
+    color: #94a3b8;
+    margin-bottom: 25px;
+}
+
+/* BUTTON */
+
+.btn-error-primary {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient( 135deg, #ef4444, #dc2626 );
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .25s;
+}
+
+    .btn-error-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(239,68,68,.5);
+    }

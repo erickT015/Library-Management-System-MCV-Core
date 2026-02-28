@@ -28,11 +28,11 @@ namespace AppCrudCore.Controllers
                 .Include(t => t.ClienteUsuario)
                 .Include(t => t.EmpleadoUsuario)
                 .Include(t => t.Detalles)
-                    .ThenInclude(d => d.Libro)
-                .AsQueryable();
+                .ThenInclude(d => d.Libro)
+                .AsNoTracking()
+                .OrderByDescending(t => t.IdTransaccionBiblioteca)
+                .Take(100);
 
-            //ordenamiento
-            query = query.OrderByDescending(t => t.IdTransaccionBiblioteca);
 
             var transacciones = await query.ToListAsync();
 
@@ -58,10 +58,6 @@ namespace AppCrudCore.Controllers
                 return NotFound();
 
             return View(transaccion);
-        }
-        private bool TransaccionDetalleExists(int id)
-        {
-            return _context.TransaccionDetalle.Any(e => e.IdTransaccionDetalle == id);
         }
     }
 }

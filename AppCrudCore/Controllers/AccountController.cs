@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace AppCrudCore.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly AppDBContext _context;
 
@@ -32,31 +32,45 @@ namespace AppCrudCore.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var usuario = await _context.Usuario
-                .Include(u => u.Rol)
-                .FirstOrDefaultAsync(u => u.Correo == model.Correo);
-
-            if (usuario == null)
+            try
             {
-                ModelState.AddModelError("", "Correo o contraseña incorrectos");
-                return View(model);
-            }
+                if (!ModelState.IsValid)
+                    return View(model);
 
-            bool passwordValido = BCrypt.Net.BCrypt.Verify(model.Password, usuario.PasswordHash);
+                var usuario = await _context.Usuario
+                    .Include(u => u.Rol)
+                    .FirstOrDefaultAsync(u => u.Correo == model.Correo);
 
-            if (!passwordValido)
-            {
-                ModelState.AddModelError("", "Correo o contraseña incorrectos");
-                return View(model);
-            }
 
-            usuario.UltimoLogin = DateTime.Now;
-            await _context.SaveChangesAsync();
+                if (usuario != null && !usuario.Activo)
+                {
+                    ModelState.AddModelError("", "Correo o contraseña incorrectos");
+                    return View(model);
+                }
 
-            var claims = new List<Claim>
+                if (usuario == null)
+                {
+                    return View(model);
+                }
+
+                if ( usuario.IdUsuario == SYSTEM_USER_ID)
+                   {
+                      ModelState.AddModelError("", "Correo o contraseña incorrectos");
+                     return View(model);
+                 }
+
+                bool passwordValido = BCrypt.Net.BCrypt.Verify(model.Password, usuario.PasswordHash);
+
+                if (!passwordValido)
+                {
+                    ModelState.AddModelError("", "Correo o contraseña incorrectos");
+                    return View(model);
+                }
+
+                usuario.UltimoLogin = DateTime.Now;
+                await _context.SaveChangesAsync();
+
+                var claims = new List<Claim>
     {
         new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
         new Claim(ClaimTypes.Name, usuario.NombreCompleto),
@@ -66,26 +80,32 @@ namespace AppCrudCore.Controllers
         new Claim("RequiereCambioPassword", usuario.RequiereCambioPassword.ToString())
     };
 
-            var claimsIdentity = new ClaimsIdentity(
-        claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsIdentity = new ClaimsIdentity(
+            claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            var authProperties = new AuthenticationProperties
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60)
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                /*if (usuario.RequiereCambioPassword)
+                {
+                    return RedirectToAction("CambiarPassword");
+                }*/
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception )
             {
-                IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60)
-            };
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
-
-            /*if (usuario.RequiereCambioPassword)
-            {
-                return RedirectToAction("CambiarPassword");
-            }*/
-
-            return RedirectToAction("Index", "Home");
+                ModelState.AddModelError("", "Ha ocurrido un error ");
+                return View();
+            }
         }
 
         // POST: ForgotPassword
@@ -99,7 +119,6 @@ namespace AppCrudCore.Controllers
             // lógica futura
             return RedirectToAction("Login");
         }
-
 
         [AllowAnonymous]
         public IActionResult Register()
@@ -161,7 +180,7 @@ namespace AppCrudCore.Controllers
         //POST: LOGOUT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(

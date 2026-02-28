@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Detalle Operación";
+
+    var adminOrEmpleado = User.IsInRole("Admin") || User.IsInRole("Empleado");
 }
 
 <section class="main-container">
@@ -11,7 +13,9 @@
         <!-- HEADER -->
         <div class="form-header">
             <h1 class="title">
-                Operación #@Model.IdTransaccionBiblioteca
+                Transacción @if(adminOrEmpleado){
+                    @Model.IdTransaccionBiblioteca
+                }else{}
             </h1>
             <p class="subtitle">
                 Información completa de la transacción
@@ -113,6 +117,12 @@
                     @Model.FechaCreacion.ToShortDateString()
                 </span>
             </div>
+            <div class="summary-item">
+                <span class="label">Fecha Devolución</span>
+                <span class="value">
+                    @(Model.FechaDevolucion.HasValue ? Model.FechaDevolucion.Value.ToShortDateString() : "-")
+                </span>
+            </div>
 
             <div class="summary-item total">
                 <span class="label">Total</span>
@@ -127,7 +137,7 @@
 
             <a asp-action="Edit"
                asp-route-id="@Model.IdTransaccionBiblioteca"
-               class="btn-primary-submit">
+               class="btn-custom btnEdit">
                 Editar
             </a>
 

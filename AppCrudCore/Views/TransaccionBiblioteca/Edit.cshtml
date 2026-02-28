@@ -81,12 +81,58 @@
             <div class="separator"></div>
 
             <!-- INFO BLOQUE SEGURIDAD -->
+            <!-- DETALLE TABLA -->
+            <h3 class="subtitle">Detalle de Libros</h3>
+
+            <div class="table-responsive">
+
+                <table class="modern-table">
+
+                    <thead>
+                        <tr>
+                            <th>Libro</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var d in Model.Detalles)
+                        {
+                            <tr>
+
+                                <td>
+                                    <span class="book-title">
+                                        @d.Libro.Titulo
+                                    </span>
+                                </td>
+
+                                <td>@d.Cantidad</td>
+
+                                <td class="price-cell">
+                                    ₡ @d.PrecioUnitario
+                                </td>
+
+                                <td class="price-cell">
+                                    ₡ @(d.Cantidad* d.PrecioUnitario)
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
             <div class="summary-card">
 
                 <div class="summary-item">
-                    <span class="label">Modo Seguro</span>
+                    <span class="label">Fecha Creación</span>
                     <span class="value">
-                        Solo campos autorizados
+                        @Model.FechaCreacion
                     </span>
                 </div>
 

@@ -72,6 +72,7 @@ namespace AppCrudCore.Controllers
             return View(libro);
         }
 
+
         // GET: Libro/Create
         [Authorize(Policy = "AdminOrEmpleado")]
         public IActionResult Create()
@@ -84,7 +85,7 @@ namespace AppCrudCore.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "AdminOrEmpleado")]
-        public async Task<IActionResult> Create([Bind("IdLibro,Titulo,Autor,ISBN,AnioPublicacion,Resumen,PrecioVenta,StockTotal,StockPrestamo,StockVenta,Activo,CategoriaId")] Libro libro, IFormFile? imagenArchivo)
+        public async Task<IActionResult> Create([Bind("IdLibro,Titulo,Autor,ISBN,AnioPublicacion,Resumen,PrecioVenta,PrecioPrestamo,StockTotal,StockPrestamo,StockVenta,Activo,CategoriaId")] Libro libro, IFormFile? imagenArchivo)
         {
             if (ModelState.IsValid)
             {
@@ -100,6 +101,7 @@ namespace AppCrudCore.Controllers
             ViewData["CategoriaId"] = new SelectList(_context.Categoria, "IdCategoria", "Nombre", libro.CategoriaId);
             return View(libro);
         }
+
 
         // GET: Libro/Edit/5
         [Authorize(Policy = "AdminOrEmpleado")]
@@ -119,36 +121,43 @@ namespace AppCrudCore.Controllers
             return View(libro);
         }
 
+
         // POST: Libro/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "AdminOrEmpleado")]
-        public async Task<IActionResult> Edit(int id, [Bind("IdLibro,Titulo,Autor,ISBN,AnioPublicacion,Resumen,PrecioVenta,StockTotal,StockPrestamo,StockVenta,Activo,CategoriaId")] Libro libro, IFormFile? imagenArchivo)
+        public async Task<IActionResult> Edit(int id, [Bind("IdLibro,Titulo,Autor,ISBN,AnioPublicacion,Resumen,PrecioVenta,PrecioPrestamo,StockTotal,StockPrestamo,StockVenta,Activo,CategoriaId")] Libro libro, IFormFile? imagenArchivo)
         {
-            if (id != libro.IdLibro)
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var libroDb = await _context.Libro
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(l => l.IdLibro == id);
 
-                    // REEMPLAZAR IMAGEN
-                    if (imagenArchivo != null)
+                    if (libroDb == null)
+                        return NotFound();
+
+                    if (imagenArchivo != null && imagenArchivo.Length > 0)
                     {
                         await _imageService
-                            .EliminarImagenAsync(libro.ImagenUrl);
+                            .EliminarImagenAsync(libroDb.ImagenUrl);
 
                         libro.ImagenUrl =
                             await _imageService
                                 .GuardarImagenAsync(imagenArchivo);
                     }
+                    else
+                    {
+                        libro.ImagenUrl = libroDb.ImagenUrl;
+                    }
 
                     _context.Update(libro);
                     await _context.SaveChangesAsync();
                 }
+
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!LibroExists(libro.IdLibro))
@@ -165,6 +174,7 @@ namespace AppCrudCore.Controllers
             ViewData["CategoriaId"] = new SelectList(_context.Categoria, "IdCategoria", "Nombre", libro.CategoriaId);
             return View(libro);
         }
+
 
         // GET: Libro/Delete/5
         [Authorize(Policy = "AdminOnly")]
@@ -185,6 +195,7 @@ namespace AppCrudCore.Controllers
 
             return View(libro);
         }
+
 
         // POST: Libro/Delete/5
         [HttpPost, ActionName("Delete")]

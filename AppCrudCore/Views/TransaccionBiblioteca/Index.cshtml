@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<AppCrudCore.Models.TransaccionBiblioteca>
 
 @{
-    ViewData["Title"] = "Operaciones";
+    ViewData["Title"] = "Carrito";
 }
 
 <section class="main-container">
@@ -9,7 +9,7 @@
     <div class="glass-card table-page">
         <header class="table-header">
             <div>
-                <h1 class="title">Historial de Transacciones</h1>
+                <h1 class="title">Carrito</h1>
                 <p class="subtitle">Monitoreo de movimientos de biblioteca</p>
             </div>
 
@@ -177,6 +177,14 @@
         border-radius: 16px;
         padding: 25px;
         animation: fadeIn .25s ease;
+    }
+
+    .text-ellipsis {
+        max-width: 180px; 
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
     }
 </style>
 

@@ -21,8 +21,8 @@
 
                     @{
                         var librosLoop =
-                        Enumerable.Range(0, 8)
-                        .SelectMany(_ => categoria.Libros)
+                        Enumerable.Range(0,  3) //para que se vean varios
+                        .SelectMany(_ => categoria.Libros ?? new List<Libro>())
                         .ToList();
                     }
 
@@ -35,7 +35,7 @@
 
                             <div class="book-info">
 
-                                <h4>@libro.Titulo</h4>
+                                <h4 class="author">@libro.Titulo</h4>
 
                                 <p class="author">
                                     @libro.Autor

@@ -62,17 +62,20 @@ namespace AppCrudCore.Controllers
                 .AsNoTracking()
                 .AsQueryable();
 
+            // ocultar usuario sistema
+            query = ExcluirUsuarioSistema(query);
+
             //filtros existentes
             query = AplicarFiltroActivo(query, activo); // filtro por query desde base controller
             query = AplicarRestriccionUsuario(query); // Restricción empleado query desde base controller
-            if (rolId.HasValue)  query = query.Where(u => u.RolId == rolId);
+            if (rolId.HasValue) query = query.Where(u => u.RolId == rolId);
 
             //ordenamiento
             query = query.OrderBy(u => u.Cedula);
 
             var usuarios = await query.ToListAsync();
 
-            ViewBag.Roles = new SelectList( await _context.Rol.ToListAsync(), "IdRol", "Nombre", rolId );
+            ViewBag.Roles = new SelectList(await _context.Rol.ToListAsync(), "IdRol", "Nombre", rolId);
 
             ViewBag.RolId = rolId;
             ViewBag.Activo = activo ?? true;
@@ -81,6 +84,7 @@ namespace AppCrudCore.Controllers
         }
 
         // GET: Usuario/Details/5
+        [Authorize(Policy = "AdminOrEmpleado")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -93,6 +97,7 @@ namespace AppCrudCore.Controllers
 
             // Restricción empleado query desde base controller
             query = AplicarRestriccionUsuario(query);
+            query = ExcluirUsuarioSistema(query);
 
             var usuario = await query.FirstOrDefaultAsync(u => u.IdUsuario == id);
 
@@ -141,6 +146,7 @@ namespace AppCrudCore.Controllers
         }
 
         // GET: Usuario/Create
+        [Authorize(Policy = "AdminOrEmpleado")]
         public async Task<IActionResult> Create()
         {
             await CargarRolesPorUsuario();
@@ -192,13 +198,14 @@ namespace AppCrudCore.Controllers
             catch (Exception ex)
             {
                 await CargarRolesPorUsuario();
-                ModelState.AddModelError("", "Ha ocurrido un error: " + ex.Message);
+                ModelState.AddModelError("", "Ha ocurrido un error: ");
                 return View(vm);
             }
         }
 
 
         // GET: Usuario/Edit/5
+        [Authorize(Policy = "AdminOrEmpleado")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -210,6 +217,7 @@ namespace AppCrudCore.Controllers
 
             // Restricción empleado query desde base controller
             query = AplicarRestriccionUsuario(query);
+            query = ExcluirUsuarioSistema(query);
 
             var usuarioDb = await query
         .FirstOrDefaultAsync(u => u.IdUsuario == id);
@@ -237,6 +245,7 @@ namespace AppCrudCore.Controllers
         // POST: Edit/
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOrEmpleado")]
         public async Task<IActionResult> Edit(UsuarioEditViewModel vm)
         {
             try
@@ -251,6 +260,7 @@ namespace AppCrudCore.Controllers
 
                 // Restricción empleado query desde base controller
                 query = AplicarRestriccionUsuario(query);
+                query = ExcluirUsuarioSistema(query);
 
                 var usuarioDb = await query
         .FirstOrDefaultAsync(u => u.IdUsuario == vm.IdUsuario);
@@ -314,9 +324,13 @@ namespace AppCrudCore.Controllers
             if (id == null)
                 return NotFound();
 
-            var usuarioDb = await _context.Usuario
-                .Include(u => u.Rol)
-                .AsNoTracking()
+            var query = _context.Usuario
+    .Include(u => u.Rol)
+    .AsNoTracking();
+
+            query = ExcluirUsuarioSistema(query);
+
+            var usuarioDb = await query
                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
 
             if (usuarioDb == null)
@@ -328,6 +342,9 @@ namespace AppCrudCore.Controllers
             // evitar auto eliminación
             if (usuarioDb.IdUsuario == adminId)
                 return BadRequest();
+
+            if (usuarioDb.IdUsuario == 1)
+                return NotFound();
 
             var vm = new UsuarioDeleteViewModel
             {
@@ -354,6 +371,9 @@ namespace AppCrudCore.Controllers
                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
 
             if (usuarioDb == null)
+                return NotFound();
+
+            if (usuarioDb.IdUsuario == SYSTEM_USER_ID)
                 return NotFound();
 
             var adminId = int.Parse(

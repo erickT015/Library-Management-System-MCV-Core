@@ -11,7 +11,7 @@
                 <h1 class="title">Lista de Usuarios</h1>
                 <p class="subtitle">Gestiona a tus usuarios de manera simple</p>
             </div>
-            <a asp-controller="Usuario" asp-action="Create" class="btn btn-success mb-3">Nuevo</a>
+            <a asp-controller="Usuario" asp-action="Create" class="btn-create">Agregar Usuario</a>
         </header>
         <form method="get" class="filter-bar">
             <select name="RolId" asp-items="ViewBag.Roles">

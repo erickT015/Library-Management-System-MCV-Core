@@ -38,4 +38,11 @@ public abstract class BaseController : Controller
 
         return query;
     }
+
+    protected const int SYSTEM_USER_ID = 1;
+    protected IQueryable<Usuario> ExcluirUsuarioSistema(
+    IQueryable<Usuario> query)
+    {
+        return query.Where(u => u.IdUsuario != SYSTEM_USER_ID);
+    }
 }

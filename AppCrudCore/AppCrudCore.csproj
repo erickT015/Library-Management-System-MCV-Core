@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Models\ViewModels\TransaccionDetalle\" />
-    <Folder Include="wwwroot\images\libros\" />
   </ItemGroup>
 
 </Project>

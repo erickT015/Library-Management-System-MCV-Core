@@ -54,9 +54,9 @@
                         <span asp-validation-for="PrecioVenta" class="text-danger"></span>
                     </div>
                     <div class="input-group">
-                        <label class="field-label">Cantidad Total</label>
-                        <input asp-for="StockTotal" class="custom-input" />
-                        <span asp-validation-for="StockTotal" class="text-danger"></span>
+                        <label class="field-label">Precio préstamo</label>
+                        <input asp-for="PrecioPrestamo" class="custom-input" />
+                        <span asp-validation-for="PrecioPrestamo" class="text-danger"></span>
                     </div>
                     <div class="input-group">
                         <label class="field-label">Cantidad Préstamo</label>
@@ -69,6 +69,11 @@
                         <span asp-validation-for="StockVenta" class="text-danger"></span>
                     </div>
                     <div class="input-group">
+                        <label class="field-label">Cantidad Total</label>
+                        <input asp-for="StockTotal" class="custom-input" readonly/>
+                        <span asp-validation-for="StockTotal" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
                         <label class="field-label">Categoría</label>
                         <select asp-for="CategoriaId" class="custom-select" asp-items="ViewBag.CategoriaId"></select>
                     </div>
@@ -79,11 +84,15 @@
                     </div>
                 </div>
                 <hr>
-                <div class="action">
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                </div>
-                <div>
-                    <a asp-action="Index">Volver a la lista</a>
+                <div class="actions">
+                    <button type="submit"
+                            class="btn-primary-submit">
+                        💾 Guardar Cambios
+                    </button>
+                    <a asp-action="Index"
+                       class="btn-back">
+                        ← Volver al listado
+                    </a>
                 </div>
             </form>
         </div>
@@ -95,3 +104,24 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const stockPrestamo= this.getElementById("StockPrestamo");
+        const stockVenta = document.getElementById("StockVenta");
+        const stockTotal =  document.getElementById("StockTotal");
+
+         function calcularTotal() {
+
+        const prestamo = parseInt(stockPrestamo.value) || 0;
+        const venta = parseInt(stockVenta.value) || 0;
+        stockTotal.value = prestamo + venta;
+    }
+
+    stockPrestamo.addEventListener("input",
+        calcularTotal);
+
+    stockVenta.addEventListener("input",
+        calcularTotal);
+    })
+</script>

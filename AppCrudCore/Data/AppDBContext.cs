@@ -300,6 +300,28 @@ namespace AppCrudCore.Data
                     .WithMany()
                     .HasForeignKey(u => u.RolId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+
+                // ============================
+                // SEED DE DATOS (ID SISTEMA)
+                // ============================
+                tb.HasData(
+                      new Usuario
+                      {
+                          IdUsuario = 1,
+                          Correo = "system@internal.local",
+                          PasswordHash = "$2a$14$f/x5ixXCJXnA81FyYShXt.d4u3I4oOBlnIMeuXYb7KUe4sRXWIMT6",
+                          Cedula = "SYS-000",
+                          NombreCompleto = "SISTEMA",
+                          Telefono = "0000-0000",
+                          Direccion = "INTERNO",
+                          FechaRegistro = new DateTime(2024, 1, 1),
+                          UltimoLogin = null,
+                          RequiereCambioPassword = false,
+                          Activo = true,
+                          RolId = 1
+                      }
+                );
             });
 
         }

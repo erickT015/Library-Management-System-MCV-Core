@@ -5,7 +5,7 @@
 }
 <section class="main-container">
 
-    <div class="glass-card" style="max-width:1100px;">
+    <div class="glass-card">
 
         <div class="form-header">
             <h1 class="title">
@@ -39,7 +39,7 @@
             <div class="detail-block">
                 <span class="field-label">Medio de Pago</span>
                 <div class="detail-value">
-                    @Model.Origen
+                    @Model.TipoPago
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="detail-block">
-                <span class="field-label">Fecha</span>
+                <span class="field-label">Fecha Devolución</span>
                 <div class="detail-value">
                     @Model.FechaDevolucion?.ToString("dd/MM/yyyy HH:mm")
                 </div>

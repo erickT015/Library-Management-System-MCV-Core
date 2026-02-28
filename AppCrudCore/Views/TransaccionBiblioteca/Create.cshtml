@@ -4,6 +4,9 @@
 
 @{
     ViewData["Title"] = "Nueva Operación";
+
+    var adminOrEmpleado = User.IsInRole("Admin") || User.IsInRole("Empleado");
+    var EmpleadoSeleccionado = ((SelectList)ViewBag.empleados).FirstOrDefault(e => e.Selected);
 }
 
 <section class="main-container">
@@ -28,21 +31,27 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <label class="field-label">Empleado</label>
-                        <select asp-for="EmpleadoUsuarioId"
-                                asp-items="ViewBag.Empleados"
-                                id="EmpleadoUsuarioId"
-                                class="custom-select">
-                        </select>
+                        <div class="custom-input">@EmpleadoSeleccionado?.Text</div>
+                        <input type="hidden" asp-for="EmpleadoUsuarioId" value="@EmpleadoSeleccionado?.Value" />
                         <span asp-validation-for="EmpleadoUsuarioId"
                               class="error-text"></span>
                     </div>
                     <div class="input-group">
                         <label class="field-label">Cliente</label>
-                        <select asp-for="ClienteUsuarioId"
-                                asp-items="ViewBag.Clientes"
-                                id="ClienteUsuarioId"
-                                class="custom-select">
-                        </select>
+                            @if (adminOrEmpleado)
+                            {
+                            <select asp-for="ClienteUsuarioId"
+                                    asp-items="ViewBag.Clientes"
+                                    id="ClienteUsuarioId"
+                                    class="custom-select">
+                            </select>
+                            }
+                            else
+                            {
+                            <div class="custom-input">@User.Identity?.Name</div>
+                            <input type="hidden" asp-for="EmpleadoUsuarioId" value="" />
+                            }
+
                         <span asp-validation-for="ClienteUsuarioId"
                               class="error-text"></span>
                     </div>
@@ -51,7 +60,7 @@
                         <select asp-for="TipoServicio"
                                 id="TipoServicio"
                                 class="custom-select">
-                            @if ((await AuthorizationService.AuthorizeAsync(User, "AdminOrEmpleado")).Succeeded)
+                            @if (adminOrEmpleado)
                             {
                                 <option value="1">Venta</option>
                                 <option value="2">Préstamo</option>
@@ -67,7 +76,7 @@
                         <label class="field-label">Origen</label>
                         <select asp-for="Origen"
                                 class="custom-select">
-                            @if ((await AuthorizationService.AuthorizeAsync(User, "AdminOrEmpleado")).Succeeded)
+                            @if (adminOrEmpleado)
                             {
                                 <option value="1">Tienda Física</option>
                             }
@@ -135,7 +144,7 @@
                         <input id="cantidadLibro"
                                type="number"
                                min="1"
-                               value="1"
+                               value="0"
                                class="custom-input" />
                     </div>
 
@@ -252,7 +261,7 @@
                     <button type="submit"
                             id="btnConfirmar"
                             class="btn-primary-submit"
-                    disabled>
+                            disabled>
                         Confirmar Transacción
                     </button>
 
@@ -297,20 +306,21 @@
     const tipoServicioHidden = document.getElementById("TipoServicioHidden");
     const montoPagadoInput = document.querySelector("input[name='MontoPagado']");
     const grupoFecha = document.getElementById("grupoFechaDevolucion");
+    const fechaDevolucionInput = document.querySelector("input[name='FechaDevolucion']");
     const vueltoSpan = document.getElementById("vuelto");
 
     // PRECIO SEGÚN SERVICIO
     function obtenerPrecio(libro){
         if(tipoServicio.value==="2")
-            return parseFloat(libro.dataset.precioprestamo)||0;
-        return parseFloat(libro.dataset.precioventa)||0;
+            return parseFloat(libro.dataset.precioPrestamo)||0;
+        return parseFloat(libro.dataset.precioVenta)||0;
     }
 
     // STOCK SEGÚN SERVICIO
     function obtenerStock(libro){
         if(tipoServicio.value==="2")
-            return parseInt(libro.dataset.stockprestamo)||0;
-        return parseInt(libro.dataset.stockventa)||0;
+            return parseInt(libro.dataset.stockPrestamo)||0;
+        return parseInt(libro.dataset.stockVenta)||0;
     }
 
     // PREVIEW DINÁMICO
@@ -325,7 +335,7 @@
         const precio = obtenerPrecio(libroSeleccionado);
         const stockBase = obtenerStock(libroSeleccionado);
         let cantidad =
-            parseInt(cantidadInput.value)||1;
+            parseInt(cantidadInput.value)||0;
 
         if(cantidad>stockBase){
             cantidad=stockBase;
@@ -411,6 +421,12 @@
             calcularPago();
             validarFormulario();
         }
+    );
+
+    //VALIDAR FECHA DEVOLUCION
+        fechaDevolucionInput.addEventListener(
+        "change",
+        validarFormulario
     );
 
     // AGREGAR LIBRO
@@ -510,20 +526,25 @@
 
             if (!confirm(
                 "Cambiar servicio limpiará el carrito")) {
-
+                    console.log("IF DE CONFIRM");
                 tipoServicio.value = servicioAnterior;
                 return;
             }
-
+            console.log("EJECUTA LIMPIAR CARRITO");
             limpiarCarrito();
+            console.log("EJECUTA ACTUALIZAR PREV");
+
         }
 
+            console.log("FUERA DEL IF");
         servicioAnterior = tipoServicio.value;
 
         grupoFecha.style.display =
             tipoServicio.value === "2"
                 ? "block"
                 : "none";
+
+                            actualizarPreview();
     });
 
     // CAMBIO LIBRO
@@ -562,17 +583,10 @@
                     op.value=libro.id;
                     op.text=libro.text;
 
-                    op.dataset.precioventa=
-                        libro.precio;
-
-                    op.dataset.precioprestamo=
-                        libro.precioPrestamo;
-
-                    op.dataset.stockventa=
-                        libro.stockVenta;
-
-                    op.dataset.stockprestamo=
-                        libro.stockPrestamo;
+                    op.dataset.precioVenta= libro.precio;
+                    op.dataset.precioPrestamo= libro.precioPrestamo;
+                    op.dataset.stockVenta= libro.stockVenta;
+                    op.dataset.stockPrestamo= libro.stockPrestamo;
 
                     resultadoLibros.appendChild(op);
                 });
@@ -600,6 +614,7 @@
 
     });
 
+
         function validarFormulario() {
 
         const total =
@@ -609,6 +624,33 @@
             parseFloat(montoPagadoInput.value) || 0;
 
         let valido = true;
+       let fechaHoy = new Date();
+
+    if (tipoServicio.value === "2") {
+
+        const fechaValor = fechaDevolucionInput.value;
+
+        if (!fechaValor) {
+            valido = false;
+        } else {
+
+            const fechaHoy = new Date();
+            fechaHoy.setHours(0,0,0,0);
+
+            const fechaDevolucion =
+                new Date(fechaValor);
+
+            if (fechaDevolucion <= fechaHoy) {
+                valido = false;
+                fechaDevolucionInput.classList.add("input-error");
+            } else {
+                fechaDevolucionInput.classList.remove("input-error");
+            }
+        }
+    }
+
+
+
         if (carrito.length === 0) {
             valido = false;
         }

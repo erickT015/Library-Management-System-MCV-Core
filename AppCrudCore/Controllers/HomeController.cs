@@ -27,8 +27,8 @@ namespace AppCrudCore.Controllers
                 .GroupBy(l => l.Categoria!.Nombre)
                 .Select(g => new HomeCategoriaVM
                 {
-                    CategoriaNombre = g.Key,
-                    Libros = g.ToList()
+                    CategoriaNombre  = g.Key ?? "Sin Categoría",
+                    Libros = g.ToList() ?? new List<Libro>()
                 })
                 .ToListAsync();
 

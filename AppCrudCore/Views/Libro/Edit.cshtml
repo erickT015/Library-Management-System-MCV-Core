@@ -53,18 +53,22 @@
                 </div>
 
                 <div class="input-group">
-                    <label asp-for="AnioPublicacion" class="field-label"></label>
+                    <label class="field-label">Año Publicación</label>
                     <input asp-for="AnioPublicacion" class="custom-input" />
                     <span asp-validation-for="AnioPublicacion" class="validation-text"></span>
                 </div>
 
                 <div class="input-group">
-                    <label asp-for="PrecioVenta" class="field-label"></label>
+                    <label  class="field-label">Precio Venta</label>
                     <input asp-for="PrecioVenta" class="custom-input" />
+                </div>
+                <div class="input-group">
+                    <label class="field-label">Precio Préstamo</label>
+                    <input asp-for="PrecioPrestamo" class="custom-input" />
                 </div>
 
                 <div class="input-group">
-                    <label asp-for="CategoriaId" class="field-label"></label>
+                    <label  class="field-label">Categoría</label>
                     <select asp-for="CategoriaId"
                             class="custom-select"
                             asp-items="ViewBag.CategoriaId">
@@ -114,7 +118,7 @@
             <div class="actions">
 
                 <button type="submit"
-                        class="btn-primary-submit">
+                        class="btn-custom btnEdit">
                     💾 Guardar Cambios
                 </button>
 

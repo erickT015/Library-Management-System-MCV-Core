@@ -64,12 +64,66 @@ namespace AppCrudCore.Models
         public int CategoriaId { get; set; } //FK
         public Categoria? Categoria { get; set; }   // navegación (lectura)
 
+        // ===============================
+        // REGLAS DE NEGOCIO
+        // ===============================
+
+        public void ReducirStockVenta(int cantidad)
+        {
+            if (cantidad <= 0)
+                throw new InvalidOperationException(
+                    "Cantidad inválida.");
+
+            if (StockVenta < cantidad)
+                throw new InvalidOperationException(
+                    $"Stock insuficiente para venta: {Titulo}");
+
+            StockVenta -= cantidad;
+            StockTotal -= cantidad;
+
+            ActualizarEstadoActivo();
+        }
+
+        public void ReducirStockPrestamo(int cantidad)
+        {
+            if (cantidad <= 0)
+                throw new InvalidOperationException(
+                    "Cantidad inválida.");
+
+            if (StockPrestamo < cantidad)
+                throw new InvalidOperationException(
+                    $"Stock insuficiente para préstamo: {Titulo}");
+
+            StockPrestamo -= cantidad;
+
+            ActualizarEstadoActivo();
+        }
+
+        private void ActualizarEstadoActivo()
+        {
+            Activo = StockVenta > 0 || StockPrestamo > 0;
+        }
+
+        public void DevolverPrestamo(int cantidad)
+        {
+            if (cantidad <= 0)
+                throw new InvalidOperationException(
+                    "Cantidad inválida.");
+
+            StockPrestamo += cantidad;
+
+            ActualizarEstadoActivo();
+        }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            //ejecutar siempre que se actualice
+            ActualizarEstadoActivo();
+
             if (StockPrestamo + StockVenta > StockTotal)
             {
                 yield return new ValidationResult(
-                    "StockPrestamo + StockVenta no puede ser mayor que StockTotal.",
+                    "Stock Prestamo + Stock Venta no puede ser mayor que StockTotal.",
                     new[] { nameof(StockPrestamo), nameof(StockVenta), nameof(StockTotal) }
                 );
             }
