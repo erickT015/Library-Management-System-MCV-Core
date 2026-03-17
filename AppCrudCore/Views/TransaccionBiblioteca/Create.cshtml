@@ -181,9 +181,7 @@
                     </div>
 
                 </div>
-                <div class="table-responsive">
-                    <table class="table"
-                           id="tablaCarrito">
+                <div id="carritoGrid" class="cart-grid">
 
                         <thead>
                             <tr>
@@ -198,7 +196,6 @@
                         <tbody>
                         </tbody>
 
-                    </table>
                 </div>
                 <div id="contenedorDetalles"></div>
 
@@ -369,7 +366,7 @@
     function limpiarCarrito(){
 
         carrito=[];
-        tablaBody.innerHTML="";
+        carritoGrid.innerHTML="";
         contenedorDetalles.innerHTML="";
         totalSpan.innerText="0.00";
         indexDetalle=0;
@@ -470,32 +467,58 @@
         limpiarPreview();
     });
 
-        function renderCarrito(){
+    const carritoGrid =
+        document.getElementById("carritoGrid");
 
-        tablaBody.innerHTML = "";
-        contenedorDetalles.innerHTML = "";
-        indexDetalle = 0;
+    function renderCarrito(){
 
-        carrito.forEach(item => {
+        carritoGrid.innerHTML="";
+        contenedorDetalles.innerHTML="";
+        indexDetalle=0;
 
-            const row = document.createElement("tr");
+        carrito.forEach(item=>{
 
-            row.innerHTML = `
-                <td>${item.nombre}</td>
-                <td>${item.cantidad}</td>
-                <td>${item.precio.toFixed(2)}</td>
-                <td>${item.subtotal.toFixed(2)}</td>
-                <td>
-                    <button type="button"
+            const card=document.createElement("div");
+            card.className="cart-item";
+
+            card.innerHTML=`
+                <div class="cart-left">
+
+                    <div class="cart-icon">
+                        📚
+                    </div>
+
+                    <div>
+                        <div class="cart-title">
+                            ${item.nombre}
+                        </div>
+
+                        <div class="cart-meta">
+                            Cantidad: ${item.cantidad}
+                            • ₡${item.precio.toFixed(2)}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="cart-right">
+
+                    <div class="cart-price">
+                        ₡${item.subtotal.toFixed(2)}
+                    </div>
+
+                    <button
+                        class="cart-remove"
                         onclick="eliminarItem(${indexDetalle})">
-                        X
+                        ✕
                     </button>
-                </td>
+
+                </div>
             `;
 
-            tablaBody.appendChild(row);
+            carritoGrid.appendChild(card);
 
-            contenedorDetalles.innerHTML += `
+            contenedorDetalles.innerHTML+=`
                 <input type="hidden"
                     name="Detalles[${indexDetalle}].LibroId"
                     value="${item.id}" />
